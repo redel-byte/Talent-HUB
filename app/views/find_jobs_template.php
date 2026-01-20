@@ -97,17 +97,17 @@
                 </div>
                 
                 <div class="hidden md:flex space-x-8">
-                    <a href="" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
-                    <a href="find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
-                    <a href="find-jobs" class="text-purple-600 font-medium border-b-2 border-purple-600 pb-1">Find Jobs</a>
+                    <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
+                    <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
+                    <a href="/Talent-HUB/find-jobs" class="text-purple-600 font-medium border-b-2 border-purple-600 pb-1">Find Jobs</a>
                     <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
-                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
-                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
+                    <a href="/Talent-HUB/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
+                    <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
                 </div>
                 
                 <div class="flex space-x-4">
-                    <a href="login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
-                    <a href="register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
+                    <a href="/Talent-HUB/login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
+                    <a href="/Talent-HUB/register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
                 </div>
             </div>
         </div>

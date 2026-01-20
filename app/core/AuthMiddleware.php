@@ -13,6 +13,8 @@ class AuthMiddleware
         '/home' => ['GET'],
         '/find-talent' => ['GET'],
         '/find-jobs' => ['GET'],
+        '/pricing' => ['GET'],
+        '/blog' => ['GET'],
         '/login' => ['GET', 'POST'],
         '/register' => ['GET', 'POST'],
         '/logout' => ['GET'],
