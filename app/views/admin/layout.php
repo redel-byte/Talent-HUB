@@ -22,19 +22,19 @@
                 <div class="flex items-center space-x-4">
                     <!-- Admin Navigation -->
                     <div class="flex items-center space-x-4">
-                        <a href="/systemAuth/admin/dashboard" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/admin/dashboard" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-home mr-1"></i> Dashboard
                         </a>
-                        <a href="/systemAuth/admin/users" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/admin/users" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-users mr-1"></i> Users
                         </a>
-                        <a href="/systemAuth/admin/roles" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/admin/roles" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-user-tag mr-1"></i> Roles
                         </a>
-                        <a href="/systemAuth/admin/system" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/admin/system" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-cogs mr-1"></i> System
                         </a>
-                        <a href="/systemAuth/admin/logs" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/admin/logs" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-list-alt mr-1"></i> Logs
                         </a>
                     </div>
@@ -49,7 +49,7 @@
                             <div class="w-8 h-8 bg-red-800 rounded-full flex items-center justify-center">
                                 <span class="text-white text-sm font-medium">A</span>
                             </div>
-                            <a href="/systemAuth/logout" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="/Talent-HUB/logout" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i> Logout
                             </a>
                         </div>

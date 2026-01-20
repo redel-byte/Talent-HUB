@@ -2,7 +2,7 @@
     "name": "youcode/workshop_mvc",
     "autoload": {
         "psr-4": {
-            "Youcode\\WorkshopMvc\\": "app/"
+            "App\\": "app/"
         }
     },
     "authors": [

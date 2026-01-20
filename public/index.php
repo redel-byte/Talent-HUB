@@ -2,13 +2,13 @@
 
 require_once "../vendor/autoload.php";
 
-use Youcode\WorkshopMvc\Core\Router;
-use Youcode\WorkshopMvc\Core\AuthMiddleware;
-use Youcode\WorkshopMvc\Controllers\AuthController;
-use Youcode\WorkshopMvc\Controllers\HomeController;
-use Youcode\WorkshopMvc\Controllers\CandidateController;
-use Youcode\WorkshopMvc\Controllers\RecruiterController;
-use Youcode\WorkshopMvc\Controllers\AdminController;
+use App\Core\Router;
+use App\Core\AuthMiddleware;
+use App\Controllers\AuthController;
+use App\Controllers\HomeController;
+use App\Controllers\CandidateController;
+use App\Controllers\RecruiterController;
+use App\Controllers\AdminController;
 
 // Initialize middleware
 $authMiddleware = new AuthMiddleware();

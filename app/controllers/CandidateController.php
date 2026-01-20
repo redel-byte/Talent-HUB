@@ -1,10 +1,10 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Controllers;
+namespace App\Controllers;
 
-use Youcode\WorkshopMvc\Core\Controller;
-use Youcode\WorkshopMvc\Core\Database;
-use Youcode\WorkshopMvc\Models\User;
+use App\Core\Controller;
+use App\Core\Database;
+use App\Models\User;
 
 class CandidateController extends Controller
 {
@@ -23,7 +23,7 @@ class CandidateController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('candidate/dashboard', [
@@ -36,7 +36,7 @@ class CandidateController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('candidate/profile', [
@@ -49,7 +49,7 @@ class CandidateController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('candidate/applications', [
@@ -62,7 +62,7 @@ class CandidateController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('candidate/settings', [
@@ -84,12 +84,12 @@ class CandidateController extends Controller
     {
         if (!$this->isLoggedIn()) {
             $_SESSION['error'] = 'Please login to access this page.';
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-            $this->redirect('/systemAuth/403');
+            $this->redirect('/Talent-HUB/403');
         }
     }
 }

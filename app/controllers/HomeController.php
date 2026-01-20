@@ -1,8 +1,8 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Controllers;
+namespace App\Controllers;
 
-use Youcode\WorkshopMvc\Core\Controller;
+use App\Core\Controller;
 
 class HomeController extends Controller
 {

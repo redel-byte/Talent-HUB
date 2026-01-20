@@ -1,6 +1,6 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Core;
+namespace App\Core;
 
 /**
  * Security Class

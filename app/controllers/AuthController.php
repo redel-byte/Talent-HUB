@@ -1,13 +1,13 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Controllers;
+namespace App\Controllers;
 
-use Youcode\WorkshopMvc\Core\Controller;
-use Youcode\WorkshopMvc\Core\Database;
-use Youcode\WorkshopMvc\Models\User;
-use Youcode\WorkshopMvc\Core\Validator;
-use Youcode\WorkshopMvc\Core\CSRFProtection;
-use Youcode\WorkshopMvc\Core\Security;
+use App\Core\Controller;
+use App\Core\Database;
+use App\Models\User;
+use App\Core\Validator;
+use App\Core\CSRFProtection;
+use App\Core\Security;
 
 class AuthController extends Controller
 {
