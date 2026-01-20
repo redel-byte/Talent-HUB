@@ -30,6 +30,8 @@ $router->addRouter('GET', '/', [HomeController::class, 'index']);
 $router->addRouter('GET', '/home', [HomeController::class, 'index']);
 $router->addRouter('GET', '/find-talent', [HomeController::class, 'findTalent']);
 $router->addRouter('GET', '/find-jobs', [HomeController::class, 'findJobs']);
+$router->addRouter('GET', '/pricing', [HomeController::class, 'pricing']);
+$router->addRouter('GET', '/blog', [HomeController::class, 'blog']);
 
 // Authentication Routes
 $router->addRouter('GET', '/login', [AuthController::class, 'loginForm']);
