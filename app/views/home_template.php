@@ -87,17 +87,17 @@
                 </div>
                 
                 <div class="hidden md:flex space-x-8">
-                    <a href="" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
-                    <a href="find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
-                    <a href="find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
+                    <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
+                    <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
+                    <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
                     <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
                     <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
                     <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
                 </div>
                 
                 <div class="flex space-x-4">
-                    <a href="login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
-                    <a href="register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
+                    <a href="/Talent-HUB/login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
+                    <a href="/Talent-HUB/register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
                 </div>
             </div>
         </div>
@@ -115,10 +115,10 @@
                         Connect thousands of talented professionals with top companies worldwide. Your next opportunity is just a click away.
                     </p>
                     <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                        <a href="find-jobs" class="btn-primary text-white font-semibold py-3 px-8 rounded-lg inline-block">
+                        <a href="/Talent-HUB/find-jobs" class="btn-primary text-white font-semibold py-3 px-8 rounded-lg inline-block">
                             <i class="fas fa-search mr-2"></i> Find Jobs
                         </a>
-                        <a href="find-talent" class="glass-effect text-white font-semibold py-3 px-8 rounded-lg inline-block hover:bg-white hover:bg-opacity-20 transition">
+                        <a href="/Talent-HUB/find-talent" class="glass-effect text-white font-semibold py-3 px-8 rounded-lg inline-block hover:bg-white hover:bg-opacity-20 transition">
                             <i class="fas fa-briefcase mr-2"></i> Post Jobs
                         </a>
                     </div>
@@ -342,7 +342,7 @@
                 Join thousands of professionals and companies who are already finding success on TalentHub.
             </p>
             <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center">
-                <a href="/systemAuth/register" class="btn-primary text-white font-semibold py-3 px-8 rounded-lg inline-block">
+                <a href="/Talent-HUB/register" class="btn-primary text-white font-semibold py-3 px-8 rounded-lg inline-block">
                     <i class="fas fa-user-plus mr-2"></i> Sign Up Now
                 </a>
                 <a href="#" class="glass-effect text-white font-semibold py-3 px-8 rounded-lg inline-block hover:bg-white hover:bg-opacity-20 transition">

@@ -22,19 +22,19 @@
                 <div class="flex items-center space-x-4">
                     <!-- Recruiter Navigation -->
                     <div class="flex items-center space-x-4">
-                        <a href="/systemAuth/recruiter/dashboard" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/recruiter/dashboard" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-home mr-1"></i> Dashboard
                         </a>
-                        <a href="/systemAuth/recruiter/jobs" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/recruiter/jobs" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-briefcase mr-1"></i> Job Postings
                         </a>
-                        <a href="/systemAuth/recruiter/candidates" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/recruiter/candidates" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-users mr-1"></i> Candidates
                         </a>
-                        <a href="/systemAuth/recruiter/company" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/recruiter/company" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-building mr-1"></i> Company
                         </a>
-                        <a href="/systemAuth/recruiter/settings" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/recruiter/settings" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-cog mr-1"></i> Settings
                         </a>
                     </div>
@@ -49,7 +49,7 @@
                             <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
                                 <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'], 0, 1)) ?></span>
                             </div>
-                            <a href="/systemAuth/logout" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="/Talent-HUB/logout" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i> Logout
                             </a>
                         </div>

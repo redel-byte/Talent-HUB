@@ -22,16 +22,16 @@
                 <div class="flex items-center space-x-4">
                     <!-- Candidate Navigation -->
                     <div class="flex items-center space-x-4">
-                        <a href="/systemAuth/candidate/dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/candidate/dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-home mr-1"></i> Dashboard
                         </a>
-                        <a href="/systemAuth/candidate/applications" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/candidate/applications" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-file-alt mr-1"></i> Applications
                         </a>
-                        <a href="/systemAuth/candidate/profile" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/candidate/profile" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-user mr-1"></i> Profile
                         </a>
-                        <a href="/systemAuth/candidate/settings" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                        <a href="/Talent-HUB/candidate/settings" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-cog mr-1"></i> Settings
                         </a>
                     </div>
@@ -46,7 +46,7 @@
                             <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
                                 <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'], 0, 1)) ?></span>
                             </div>
-                            <a href="/systemAuth/logout" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">
+                            <a href="/Talent-HUB/logout" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i> Logout
                             </a>
                         </div>

@@ -143,7 +143,7 @@
                 </div>
                 
                 <div class="mt-4">
-                    <a href="/systemAuth/recruiter/candidates" class="text-sm font-medium text-green-600 hover:text-green-500">
+                    <a href="/Talent-HUB/recruiter/candidates" class="text-sm font-medium text-green-600 hover:text-green-500">
                         View all applications <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
@@ -223,7 +223,7 @@
                 </div>
                 
                 <div class="mt-4">
-                    <a href="/systemAuth/recruiter/jobs" class="text-sm font-medium text-green-600 hover:text-green-500">
+                    <a href="/Talent-HUB/recruiter/jobs" class="text-sm font-medium text-green-600 hover:text-green-500">
                         Manage all postings <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>

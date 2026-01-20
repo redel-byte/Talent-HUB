@@ -103,7 +103,7 @@
     <nav class="gradient-bg py-4 px-6 shadow-lg">
         <div class="container mx-auto flex justify-between items-center">
             <!-- Logo -->
-            <a href="#" class="flex items-center space-x-2">
+            <a href="/Talent-HUB/" class="flex items-center space-x-2">
                 <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
                     <i class="fas fa-users text-purple-600 text-xl"></i>
                 </div>
@@ -112,18 +112,18 @@
             
             <!-- Navigation Links -->
             <div class="hidden md:flex space-x-8">
-                <a href="#" class="text-white hover:text-yellow-300 transition">Home</a>
-                <a href="#" class="text-white hover:text-yellow-300 transition">Find Talent</a>
-                <a href="#" class="text-white hover:text-yellow-300 transition">Find Jobs</a>
+                <a href="/Talent-HUB/" class="text-white hover:text-yellow-300 transition">Home</a>
+                <a href="/Talent-HUB/find-talent" class="text-white hover:text-yellow-300 transition">Find Talent</a>
+                <a href="/Talent-HUB/find-jobs" class="text-white hover:text-yellow-300 transition">Find Jobs</a>
                 <a href="#" class="text-white hover:text-yellow-300 transition">How It Works</a>
             </div>
             
             <!-- Auth Buttons (for logged out state) -->
             <div class="flex space-x-4">
-                <a href="/systemAuth/login" class="bg-white text-purple-700 font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-gray-100">
+                <a href="/Talent-HUB/login" class="bg-white text-purple-700 font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-gray-100">
                     Sign In
                 </a>
-                <a href="/systemAuth/register" class="glass-effect text-white font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-white hover:bg-opacity-20">
+                <a href="/Talent-HUB/register" class="glass-effect text-white font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-white hover:bg-opacity-20">
                     Sign Up
                 </a>
             </div>
@@ -219,7 +219,7 @@
                             $success = $success ?? null;
                             $show_signup = $show_signup ?? false;
                             ?>
-                            <form id="loginFormElement" action="/systemAuth/login" method="post">
+                            <form id="loginFormElement" action="/Talent-HUB/login" method="post">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                                 
@@ -289,7 +289,7 @@
                                 <p class="text-gray-600">Don't have an account? 
                                     <button id="switchToSignup" class="text-purple-600 hover:text-purple-800 font-medium">Sign up here</button>
                                     <span> or </span>
-                                    <a href="/systemAuth/register" class="text-purple-600 hover:text-purple-800 font-medium">Go to registration page</a>
+                                    <a href="/Talent-HUB/register" class="text-purple-600 hover:text-purple-800 font-medium">Go to registration page</a>
                                 </p>
                             </div>
                         </div>
@@ -303,7 +303,7 @@
                                 <p class="text-gray-600 mt-2">Create your account in less than 2 minutes</p>
                             </div>
                             
-                            <form id="signupFormElement" action="/systemAuth/register" method="post">
+                            <form id="signupFormElement" action="/Talent-HUB/register" method="post">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                                 
