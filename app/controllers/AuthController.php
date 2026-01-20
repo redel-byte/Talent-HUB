@@ -144,14 +144,14 @@ class AuthController extends Controller
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         // Validate CSRF token
         if (!CSRFProtection::validateRequest()) {
             $_SESSION['error'] = 'Invalid request. Please try again.';
             Security::logSecurityEvent('CSRF token validation failed during registration', ['email' => $_POST['email'] ?? '']);
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         $email = Security::sanitize(trim($_POST['email'] ?? ''));
@@ -165,40 +165,40 @@ class AuthController extends Controller
         if (!Security::checkRateLimit('register_' . Security::getClientIP(), 3, 3600)) {
             $_SESSION['error'] = 'Too many registration attempts. Please try again later.';
             Security::logSecurityEvent('Registration rate limit exceeded', ['ip' => Security::getClientIP()]);
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         // Input validation
         if (!Security::isValidEmail($email)) {
             $_SESSION['error'] = 'Please provide a valid email address.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         if ($password !== $confirm) {
             $_SESSION['error'] = 'Passwords do not match.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         if (!Security::isStrongPassword($password)) {
             $_SESSION['error'] = 'Password must be at least 8 characters and contain letters and numbers.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         // Validate role
         if (!in_array($role, ['candidate', 'recruiter'])) {
             $_SESSION['error'] = 'Invalid role selected.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         // Check if email already exists
         if ($this->userModel->findByEmail($email)) {
             $_SESSION['error'] = 'Email already registered.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/systemAuth/register');
+            $this->redirect('/Talent-HUB/register');
         }
 
         // Create user
@@ -212,7 +212,7 @@ class AuthController extends Controller
             
             $_SESSION['success'] = 'Account created successfully. You can now log in.';
             CSRFProtection::clearToken();
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         Security::logSecurityEvent('User registration failed', [
@@ -223,7 +223,7 @@ class AuthController extends Controller
 
         $_SESSION['error'] = 'Failed to create account. Please try again.';
         $_SESSION['old_email'] = $email;
-        $this->redirect('/systemAuth/register');
+        $this->redirect('/Talent-HUB/register');
     }
 
     public function logout()
@@ -232,29 +232,29 @@ class AuthController extends Controller
         if (session_id() !== '') {
             session_destroy();
         }
-        $this->redirect('/systemAuth/login');
+        $this->redirect('/Talent-HUB/login');
     }
 
     public function home()
     {
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         // Redirect to role-specific dashboard
         $role = $_SESSION['role'] ?? 'candidate';
         switch ($role) {
             case 'candidate':
-                $this->redirect('/systemAuth/candidate/dashboard');
+                $this->redirect('/Talent-HUB/candidate/dashboard');
                 break;
             case 'recruiter':
-                $this->redirect('/systemAuth/recruiter/dashboard');
+                $this->redirect('/Talent-HUB/recruiter/dashboard');
                 break;
             case 'admin':
-                $this->redirect('/systemAuth/admin/dashboard');
+                $this->redirect('/Talent-HUB/admin/dashboard');
                 break;
             default:
-                $this->redirect('/systemAuth/login');
+                $this->redirect('/Talent-HUB/login');
                 break;
         }
     }

@@ -2,17 +2,14 @@
 
 namespace Youcode\WorkshopMvc\Core;
 
-$config = require_once "dbconfig.php";
-
-
 class Database
 {
   private static ?\PDO $conn = null;
 
   public static function connection():\PDO{
-  global $config;
     if(self::$conn === null)
     {
+      $config = require_once "dbconfig.php";
       $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset=utf8mb4";
       try{
       self::$conn = new \PDO($dsn,$config['user'],$config['password'],[

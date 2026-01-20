@@ -14,7 +14,7 @@ use Youcode\WorkshopMvc\Controllers\AdminController;
 $authMiddleware = new AuthMiddleware();
 
 // Get current request info
-$uri = str_replace("/systemAuth", "", rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"));
+$uri = str_replace("/Talent-HUB", "", rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"));
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 if ($uri === "") $uri = "/";
 

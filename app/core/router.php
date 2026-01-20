@@ -9,7 +9,7 @@ class Router
   protected string $currentMethod;
 
   public function __construct() {
-    $this->currentURI = str_replace("/systemAuth","",rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"));
+    $this->currentURI = str_replace("/Talent-HUB","",rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"));
     $this->currentMethod = $_SERVER['REQUEST_METHOD'] ?? 'GET';
   }
   public function addRouter(string $method, string $path, $action): void

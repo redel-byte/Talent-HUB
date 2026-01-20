@@ -129,7 +129,7 @@ class AuthMiddleware
 
     private function redirect(string $url): void
     {
-        $baseUrl = '/systemAuth';
+        $baseUrl = '/Talent-HUB';
         $fullUrl = $baseUrl . $url;
         header("Location: {$fullUrl}");
         exit();
