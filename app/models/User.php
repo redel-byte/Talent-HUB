@@ -1,10 +1,10 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Models;
+namespace App\Models;
 
-use Youcode\WorkshopMvc\Core\Database;
-use Youcode\WorkshopMvc\Core\Hashpassword;
-use Youcode\WorkshopMvc\Core\Validator;
+use App\Core\Database;
+use App\Core\Hashpassword;
+use App\Core\Validator;
 
 class User
 {

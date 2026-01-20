@@ -1,6 +1,6 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Core;
+namespace App\Core;
 
 class Database
 {

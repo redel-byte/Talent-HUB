@@ -1,6 +1,6 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Core;
+namespace App\Core;
 
 /**
  * Base Controller
@@ -29,7 +29,7 @@ class Controller
      */
     protected function redirect($url)
     {
-        $baseUrl = '/systemAuth';
+        $baseUrl = '/Talent-HUB';
         $fullUrl = $baseUrl . $url;
         header("Location: {$fullUrl}");
         exit();

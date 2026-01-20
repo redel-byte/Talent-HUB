@@ -1,17 +1,17 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Controllers;
+namespace App\Controllers;
 
-use Youcode\WorkshopMvc\Core\Database;
-use Youcode\WorkshopMvc\Models\User;
-use Youcode\WorkshopMvc\Core\Validator;
+use App\Core\Database;
+use App\Models\User;
+use App\Core\Validator;
 
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-  header('Location: /systemAuth/login');
+  header('Location: /Talent-HUB/login');
   exit();
 }
 
@@ -21,7 +21,7 @@ $password = $_POST['password'] ?? '';
 if (empty($email) || empty($password) || !Validator::validateEmail($email)) {
   $_SESSION['error'] = 'Please provide a valid email and password.';
   $_SESSION['old_email'] = $email;
-  header('Location: /systemAuth/login');
+  header('Location: /Talent-HUB/login');
   exit();
 }
 

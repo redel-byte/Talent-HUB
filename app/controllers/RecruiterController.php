@@ -1,10 +1,10 @@
 <?php
 
-namespace Youcode\WorkshopMvc\Controllers;
+namespace App\Controllers;
 
-use Youcode\WorkshopMvc\Core\Controller;
-use Youcode\WorkshopMvc\Core\Database;
-use Youcode\WorkshopMvc\Models\User;
+use App\Core\Controller;
+use App\Core\Database;
+use App\Models\User;
 
 class RecruiterController extends Controller
 {
@@ -23,7 +23,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('recruiter/dashboard', [
@@ -36,7 +36,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('recruiter/jobs', [
@@ -49,7 +49,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('recruiter/candidates', [
@@ -62,7 +62,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('recruiter/company', [
@@ -75,7 +75,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         $this->view('recruiter/settings', [
@@ -97,12 +97,12 @@ class RecruiterController extends Controller
     {
         if (!$this->isLoggedIn()) {
             $_SESSION['error'] = 'Please login to access this page.';
-            $this->redirect('/systemAuth/login');
+            $this->redirect('/Talent-HUB/login');
         }
 
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-            $this->redirect('/systemAuth/403');
+            $this->redirect('/Talent-HUB/403');
         }
     }
 }

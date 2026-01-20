@@ -31,7 +31,7 @@
             
             <!-- Action Buttons -->
             <div class="space-y-3">
-                <a href="/systemAuth/" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                <a href="/Talent-HUB/" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <i class="fas fa-home mr-2"></i>
                     Go to Homepage
                 </a>
@@ -46,13 +46,13 @@
             <div class="mt-6 pt-6 border-t border-gray-200">
                 <p class="text-sm text-gray-600 mb-3">Popular Pages:</p>
                 <div class="flex flex-wrap justify-center gap-2">
-                    <a href="/systemAuth/login" class="text-xs text-blue-600 hover:text-blue-500">Login</a>
+                    <a href="/Talent-HUB/login" class="text-xs text-blue-600 hover:text-blue-500">Login</a>
                     <span class="text-xs text-gray-400">•</span>
-                    <a href="/systemAuth/register" class="text-xs text-blue-600 hover:text-blue-500">Register</a>
+                    <a href="/Talent-HUB/register" class="text-xs text-blue-600 hover:text-blue-500">Register</a>
                     <span class="text-xs text-gray-400">•</span>
-                    <a href="/systemAuth/candidate/dashboard" class="text-xs text-blue-600 hover:text-blue-500">Candidates</a>
+                    <a href="/Talent-HUB/candidate/dashboard" class="text-xs text-blue-600 hover:text-blue-500">Candidates</a>
                     <span class="text-xs text-gray-400">•</span>
-                    <a href="/systemAuth/recruiter/dashboard" class="text-xs text-blue-600 hover:text-blue-500">Recruiters</a>
+                    <a href="/Talent-HUB/recruiter/dashboard" class="text-xs text-blue-600 hover:text-blue-500">Recruiters</a>
                 </div>
             </div>
             

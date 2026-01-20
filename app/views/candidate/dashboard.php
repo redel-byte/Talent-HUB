@@ -122,7 +122,7 @@
                 </div>
                 
                 <div class="mt-4">
-                    <a href="/systemAuth/candidate/applications" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                    <a href="/Talent-HUB/candidate/applications" class="text-sm font-medium text-blue-600 hover:text-blue-500">
                         View all applications <i class="fas fa-arrow-right ml-1"></i>
                     </a>
                 </div>
