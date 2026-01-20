@@ -91,8 +91,8 @@
                     <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
                     <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
                     <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
-                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
-                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
+                    <a href="/Talent-HUB/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
+                    <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
                 </div>
                 
                 <div class="flex space-x-4">

@@ -100,38 +100,27 @@
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav class="gradient-bg py-4 px-6 shadow-lg">
-        <div class="container mx-auto flex justify-between items-center">
-            <!-- Logo -->
-            <a href="/Talent-HUB/" class="flex items-center space-x-2">
-                <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
-                    <i class="fas fa-users text-purple-600 text-xl"></i>
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-purple-600">TalentHub</h1>
                 </div>
-                <span class="text-white text-2xl font-bold">Talent<span class="text-yellow-300">Hub</span></span>
-            </a>
-            
-            <!-- Navigation Links -->
-            <div class="hidden md:flex space-x-8">
-                <a href="/Talent-HUB/" class="text-white hover:text-yellow-300 transition">Home</a>
-                <a href="/Talent-HUB/find-talent" class="text-white hover:text-yellow-300 transition">Find Talent</a>
-                <a href="/Talent-HUB/find-jobs" class="text-white hover:text-yellow-300 transition">Find Jobs</a>
-                <a href="#" class="text-white hover:text-yellow-300 transition">How It Works</a>
+                
+                <div class="hidden md:flex space-x-8">
+                    <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
+                    <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
+                    <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
+                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
+                    <a href="/Talent-HUB/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
+                    <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="/Talent-HUB/login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
+                    <a href="/Talent-HUB/register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
+                </div>
             </div>
-            
-            <!-- Auth Buttons (for logged out state) -->
-            <div class="flex space-x-4">
-                <a href="/Talent-HUB/login" class="bg-white text-purple-700 font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-gray-100">
-                    Sign In
-                </a>
-                <a href="/Talent-HUB/register" class="glass-effect text-white font-semibold py-2 px-6 rounded-lg transition duration-300 hover:bg-white hover:bg-opacity-20">
-                    Sign Up
-                </a>
-            </div>
-            
-            <!-- Mobile Menu Button -->
-            <button class="md:hidden text-white text-2xl">
-                <i class="fas fa-bars"></i>
-            </button>
         </div>
     </nav>
     
