@@ -36,4 +36,20 @@ class HomeController extends Controller
             'page_title' => 'Find Jobs - TalentHub'
         ]);
     }
+
+    public function pricing()
+    {
+        // Pricing page for all plans
+        $this->view('pricing_template', [
+            'page_title' => 'Pricing Plans - TalentHub'
+        ]);
+    }
+
+    public function blog()
+    {
+        // Blog page with articles and insights
+        $this->view('blog_template', [
+            'page_title' => 'Blog - TalentHub Insights'
+        ]);
+    }
 }
