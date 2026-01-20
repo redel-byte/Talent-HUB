@@ -5,7 +5,6 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Database;
 use App\Models\User;
-use App\Core\Validator;
 use App\Core\CSRFProtection;
 use App\Core\Security;
 
