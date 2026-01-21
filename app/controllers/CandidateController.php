@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\User;
+use App\Models\UserRepository;
 
 class CandidateController extends Controller
 {

@@ -4,257 +4,210 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\User;
+use App\Repository\UserRepository;
 use App\Core\CSRFProtection;
 use App\Core\Security;
 
 class AuthController extends Controller
 {
-    protected $userModel;
+    private UserRepository $userRepository;
 
     public function __construct()
     {
-        if (session_status() == PHP_SESSION_NONE) {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
+
+        $this->userRepository = new UserRepository(Database::connection());
         Security::setSecureHeaders();
     }
 
-    public function loginForm()
+    /* =========================
+       AUTH FORMS
+    ==========================*/
+
+    public function loginForm(): void
     {
-        if (isset($_SESSION['user_id'])) {
-            $this->redirect('/');
+        if ($this->isAuthenticated()) {
+            $this->redirect($this->redirectByRole($_SESSION['role']));
         }
 
-        $error = $_SESSION['error'] ?? null;
-        $old_email = $_SESSION['old_email'] ?? '';
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['error'], $_SESSION['old_email'], $_SESSION['success']);
-
         $this->view('auth/login', [
-            'error' => $error,
-            'old_email' => $old_email,
-            'success' => $success,
+            'error'       => $_SESSION['error'] ?? null,
+            'success'     => $_SESSION['success'] ?? null,
+            'old_email'   => $_SESSION['old_email'] ?? '',
             'show_signup' => false,
-            'csrf_token' => CSRFProtection::getToken()
-        ]);
-    }
-
-    public function login()
-    {
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/login');
-        }
-
-        // Validate CSRF token
-        if (!CSRFProtection::validateRequest()) {
-            $_SESSION['error'] = 'Invalid request. Please try again.';
-            Security::logSecurityEvent('CSRF token validation failed', ['email' => $_POST['email'] ?? '']);
-            $this->redirect('/login');
-        }
-
-        // Rate limiting check
-        $email = trim($_POST['email'] ?? '');
-        if (!Security::checkRateLimit('login_' . $email, 5, 300)) {
-            $_SESSION['error'] = 'Too many login attempts. Please try again later.';
-            Security::logSecurityEvent('Rate limit exceeded', ['email' => $email]);
-            $this->redirect('/login');
-        }
-
-        $password = $_POST['password'] ?? '';
-
-        // Input validation
-        if (empty($email) || empty($password) || !Security::isValidEmail($email)) {
-            $_SESSION['error'] = 'Please provide a valid email and password.';
-            $_SESSION['old_email'] = $email;
-            $this->redirect('/login');
-        }
-
-        // Authenticate user
-        $user = $this->userModel->findByEmail($email);
-        if ($user && password_verify($password, $user['password'])) {
-            // Regenerate session ID to prevent session fixation
-            session_regenerate_id(true);
-            
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['email'] = $user['email'];
-            $_SESSION['role'] = $user['role'] ?? 'candidate';
-            $_SESSION['last_activity'] = time();
-            
-            // Log successful login
-            Security::logSecurityEvent('Successful login', [
-                'user_id' => $user['id'],
-                'email' => $email,
-                'role' => $user['role']
-            ]);
-            
-            // Clear CSRF token and redirect
-            CSRFProtection::clearToken();
-            
-            // Role-based redirection
-            switch ($_SESSION['role']) {
-                case 'candidate':
-                    $this->redirect('/candidate/dashboard');
-                    break;
-                case 'recruiter':
-                    $this->redirect('/recruiter/dashboard');
-                    break;
-                case 'admin':
-                    $this->redirect('/admin/dashboard');
-                    break;
-                default:
-                    $this->redirect('/');
-                    break;
-            }
-        }
-
-        // Log failed login attempt
-        Security::logSecurityEvent('Failed login attempt', [
-            'email' => $email,
-            'ip' => Security::getClientIP()
+            'csrf_token'  => CSRFProtection::getToken()
         ]);
 
-        $_SESSION['error'] = 'Invalid email or password.';
-        $_SESSION['old_email'] = $email;
-        $this->redirect('/login');
+        unset($_SESSION['error'], $_SESSION['success'], $_SESSION['old_email']);
     }
 
-    public function registerForm()
+    public function registerForm(): void
     {
-        if (isset($_SESSION['user_id'])) {
-            $this->redirect('/');
+        if ($this->isAuthenticated()) {
+            $this->redirect($this->redirectByRole($_SESSION['role']));
         }
-
-        $error = $_SESSION['error'] ?? null;
-        $old_email = $_SESSION['old_email'] ?? '';
-        $success = $_SESSION['success'] ?? null;
-        unset($_SESSION['error'], $_SESSION['old_email'], $_SESSION['success']);
 
         $this->view('auth/login', [
-            'error' => $error,
-            'old_email' => $old_email,
-            'success' => $success,
+            'error'       => $_SESSION['error'] ?? null,
+            'success'     => $_SESSION['success'] ?? null,
+            'old_email'   => $_SESSION['old_email'] ?? '',
             'show_signup' => true,
-            'csrf_token' => CSRFProtection::getToken()
+            'csrf_token'  => CSRFProtection::getToken()
         ]);
+
+        unset($_SESSION['error'], $_SESSION['success'], $_SESSION['old_email']);
     }
 
-    public function register()
+    /* =========================
+       LOGIN
+    ==========================*/
+
+    public function login(): void
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/login');
         }
 
-        // Validate CSRF token
         if (!CSRFProtection::validateRequest()) {
-            $_SESSION['error'] = 'Invalid request. Please try again.';
-            Security::logSecurityEvent('CSRF token validation failed during registration', ['email' => $_POST['email'] ?? '']);
-            $this->redirect('/Talent-HUB/register');
+            $this->fail('Invalid request.', '/login');
         }
 
-        $email = Security::sanitize(trim($_POST['email'] ?? ''));
-        $firstName = Security::sanitize(trim($_POST['first_name'] ?? ''));
-        $lastName = Security::sanitize(trim($_POST['last_name'] ?? ''));
+        $email    = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
-        $confirm = $_POST['confirm_password'] ?? '';
-        $role = Security::sanitize($_POST['role'] ?? 'candidate');
 
-        // Rate limiting check
-        if (!Security::checkRateLimit('register_' . Security::getClientIP(), 3, 3600)) {
-            $_SESSION['error'] = 'Too many registration attempts. Please try again later.';
-            Security::logSecurityEvent('Registration rate limit exceeded', ['ip' => Security::getClientIP()]);
-            $this->redirect('/Talent-HUB/register');
+        if (!Security::isValidEmail($email) || empty($password)) {
+            $this->fail('Invalid credentials.', '/login', $email);
         }
 
-        // Input validation
+        if (!Security::checkRateLimit('login_' . $email, 5, 300)) {
+            $this->fail('Too many attempts. Try later.', '/login');
+        }
+
+        $user = $this->userRepository->findByEmail($email);
+
+        if (!$user || !password_verify($password, $user['password'])) {
+            Security::logSecurityEvent('Failed login', ['email' => $email]);
+            $this->fail('Invalid email or password.', '/login', $email);
+        }
+
+        session_regenerate_id(true);
+
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['email']   = $user['email'];
+        $_SESSION['role']    = $user['role'];
+        $_SESSION['last_activity'] = time();
+
+        CSRFProtection::clearToken();
+
+        Security::logSecurityEvent('Login success', [
+            'user_id' => $user['id'],
+            'role'    => $user['role']
+        ]);
+
+        $this->redirect($this->redirectByRole($user['role']));
+    }
+
+    /* =========================
+       REGISTER
+    ==========================*/
+
+    public function register(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/register');
+        }
+
+        if (!CSRFProtection::validateRequest()) {
+            $this->fail('Invalid request.', '/register');
+        }
+
+        $email     = Security::sanitize($_POST['email'] ?? '');
+        $firstName = Security::sanitize($_POST['first_name'] ?? '');
+        $lastName  = Security::sanitize($_POST['last_name'] ?? '');
+        $password  = $_POST['password'] ?? '';
+        $confirm   = $_POST['confirm_password'] ?? '';
+        $role      = $_POST['role'] ?? 'candidate';
+        $email= $post['email'] ?? '';
+        
+
         if (!Security::isValidEmail($email)) {
-            $_SESSION['error'] = 'Please provide a valid email address.';
-            $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->fail('Invalid email.', '/register', $email);
         }
 
         if ($password !== $confirm) {
-            $_SESSION['error'] = 'Passwords do not match.';
-            $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->fail('Passwords do not match.', '/register', $email);
         }
 
         if (!Security::isStrongPassword($password)) {
-            $_SESSION['error'] = 'Password must be at least 8 characters and contain letters and numbers.';
-            $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->fail('Weak password.', '/register', $email);
         }
 
-        // Validate role
-        if (!in_array($role, ['candidate', 'recruiter'])) {
-            $_SESSION['error'] = 'Invalid role selected.';
-            $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+        if (!in_array($role, ['candidate', 'recruiter'], true)) {
+            $this->fail('Invalid role.', '/register', $email);
         }
 
-        // Check if email already exists
-        if ($this->userModel->findByEmail($email)) {
-            $_SESSION['error'] = 'Email already registered.';
-            $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+        if ($this->userRepository->findByEmail($email)) {
+            $this->fail('Email already exists.', '/register', $email);
         }
 
-        // Create user
-        $created = $this->userModel->create($email, $password, $role, $firstName, $lastName);
-        if ($created) {
-            Security::logSecurityEvent('User registration successful', [
-                'email' => $email,
-                'role' => $role,
-                'ip' => Security::getClientIP()
-            ]);
-            
-            $_SESSION['success'] = 'Account created successfully. You can now log in.';
-            CSRFProtection::clearToken();
-            $this->redirect('/Talent-HUB/login');
+        $created = $this->userRepository->create(
+            $email,
+            $password,
+            $role,
+            $firstName,
+            $lastName
+        );
+
+        if (!$created) {
+            $this->fail('Registration failed.', '/register', $email);
         }
 
-        Security::logSecurityEvent('User registration failed', [
+        Security::logSecurityEvent('User registered', [
             'email' => $email,
-            'role' => $role,
-            'ip' => Security::getClientIP()
+            'role'  => $role
         ]);
 
-        $_SESSION['error'] = 'Failed to create account. Please try again.';
-        $_SESSION['old_email'] = $email;
-        $this->redirect('/Talent-HUB/register');
+        $_SESSION['success'] = 'Account created. Please login.';
+        $this->redirect('/login');
     }
 
-    public function logout()
+    /* =========================
+       LOGOUT
+    ==========================*/
+
+    public function logout(): void
     {
-        $_SESSION = [];
-        if (session_id() !== '') {
-            session_destroy();
-        }
-        $this->redirect('/Talent-HUB/login');
+        session_destroy();
+        $this->redirect('/login');
     }
 
-    public function home()
-    {
-        if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/Talent-HUB/login');
-        }
+    /* =========================
+       HELPERS
+    ==========================*/
 
-        // Redirect to role-specific dashboard
-        $role = $_SESSION['role'] ?? 'candidate';
-        switch ($role) {
-            case 'candidate':
-                $this->redirect('/Talent-HUB/candidate/dashboard');
-                break;
-            case 'recruiter':
-                $this->redirect('/Talent-HUB/recruiter/dashboard');
-                break;
-            case 'admin':
-                $this->redirect('/Talent-HUB/admin/dashboard');
-                break;
-            default:
-                $this->redirect('/Talent-HUB/login');
-                break;
+    private function isAuthenticated(): bool
+    {
+        return isset($_SESSION['user_id']);
+    }
+
+    private function redirectByRole(string $role): string
+    {
+        return match ($role) {
+            'admin'     => '/admin/dashboard',
+            'recruiter' => '/recruiter/dashboard',
+            default     => '/candidate/dashboard',
+        };
+    }
+
+    private function fail(string $message, string $redirect, string $email = ''): void
+    {
+        $_SESSION['error'] = $message;
+        if ($email) {
+            $_SESSION['old_email'] = $email;
         }
+        $this->redirect($redirect);
     }
 }
+git 
