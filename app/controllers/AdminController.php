@@ -2,107 +2,93 @@
 
 namespace App\Controllers;
 
-// use App\Core\Controller;
-// use App\Core\Database;
-// use App\Models\User;
+use App\Core\Controller;
+use App\Core\Database;
+use App\Repository\UserRepository;
 
-// class AdminController extends Controller
-// {
-//     private User $userModel;
+class AdminController extends Controller
+{
+    private UserRepository $userRepository;
 
-//     public function __construct()
-//     {
-//         if (session_status() == PHP_SESSION_NONE) {
-//             session_start();
-//         }
-//         $this->userModel = new User(Database::connection());
-//         $this->requireRole('admin');
-//     }
+    public function __construct()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
 
-//     public function dashboard()
-//     {
-//         $user = $this->getCurrentUser();
-//         if (!$user) {
-//             $this->redirect('/Talent-HUB/login');
-//         }
+        $this->requireRole('admin');
 
-//         $this->view('admin/dashboard', [
-//             'user' => $user,
-//             'page_title' => 'Admin Dashboard - TalentHub'
-//         ]);
-//     }
+        $this->userRepository = new UserRepository(Database::connection());
+    }
 
-//     public function users()
-//     {
-//         $user = $this->getCurrentUser();
-//         if (!$user) {
-//             $this->redirect('/Talent-HUB/login');
-//         }
+    public function dashboard(): void
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/login');
+        }
 
-//         $this->view('admin/users', [
-//             'user' => $user,
-//             'page_title' => 'Manage Users - TalentHub'
-//         ]);
-//     }
+        $this->view('admin/dashboard', [
+            'user'       => $user,
+            'page_title' => 'Admin Dashboard - TalentHub'
+        ]);
+    }
 
-//     public function roles()
-//     {
-//         $user = $this->getCurrentUser();
-//         if (!$user) {
-//             $this->redirect('/Talent-HUB/login');
-//         }
+    public function users(): void
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/login');
+        }
 
-//         $this->view('admin/roles', [
-//             'user' => $user,
-//             'page_title' => 'Manage Roles - TalentHub'
-//         ]);
-//     }
+        $this->view('admin/users', [
+            'user'       => $user,
+            'page_title' => 'Manage Users - TalentHub'
+        ]);
+    }
 
-//     public function system()
-//     {
-//         $user = $this->getCurrentUser();
-//         if (!$user) {
-//             $this->redirect('/Talent-HUB/login');
-//         }
+    public function roles(): void
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/login');
+        }
 
-//         $this->view('admin/system', [
-//             'user' => $user,
-//             'page_title' => 'System Settings - TalentHub'
-//         ]);
-//     }
+        $this->view('admin/roles', [
+            'user'       => $user,
+            'page_title' => 'Manage Roles - TalentHub'
+        ]);
+    }
 
-//     public function logs()
-//     {
-//         $user = $this->getCurrentUser();
-//         if (!$user) {
-//             $this->redirect('/Talent-HUB/login');
-//         }
+    public function system(): void
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/login');
+        }
 
-//         $this->view('admin/logs', [
-//             'user' => $user,
-//             'page_title' => 'System Logs - TalentHub'
-//         ]);
-//     }
+        $this->view('admin/system', [
+            'user'       => $user,
+            'page_title' => 'System Settings - TalentHub'
+        ]);
+    }
 
-//     private function getCurrentUser(): ?array
-//     {
-//         if (!isset($_SESSION['user_id'])) {
-//             return null;
-//         }
+    public function logs(): void
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/login');
+        }
 
-//         return $this->userModel->findById($_SESSION['user_id']);
-//     }
+        $this->view('admin/logs', [
+            'user'       => $user,
+            'page_title' => 'System Logs - TalentHub'
+        ]);
+    }
 
-//     protected function requireRole(string $requiredRole): void
-//     {
-//         if (!$this->isLoggedIn()) {
-//             $_SESSION['error'] = 'Please login to access this page.';
-//             $this->redirect('/Talent-HUB/login');
-//         }
+    /* =========================
+       HELPERS
+    ==========================*/
 
-//         if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
-//             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-//             $this->redirect('/Talent-HUB/403');
-//         }
-//     }
-// }
+ 
+}

@@ -4,18 +4,15 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\User;
 
 class RecruiterController extends Controller
 {
-    private User $userModel;
 
     public function __construct()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
         $this->requireRole('recruiter');
     }
 
@@ -82,27 +79,5 @@ class RecruiterController extends Controller
             'user' => $user,
             'page_title' => 'Settings - TalentHub'
         ]);
-    }
-
-    private function getCurrentUser(): ?array
-    {
-        if (!isset($_SESSION['user_id'])) {
-            return null;
-        }
-
-        return $this->userModel->findById($_SESSION['user_id']);
-    }
-
-    protected function requireRole(string $requiredRole): void
-    {
-        if (!$this->isLoggedIn()) {
-            $_SESSION['error'] = 'Please login to access this page.';
-            $this->redirect('/Talent-HUB/login');
-        }
-
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
-            $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-            $this->redirect('/Talent-HUB/403');
-        }
     }
 }

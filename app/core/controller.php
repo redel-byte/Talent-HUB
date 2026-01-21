@@ -21,12 +21,22 @@ class Controller
         extract($data);
         require_once __DIR__ . "/../views/{$view}.php";
     }
+    
 
     /**
      * Redirect to a different URL
      * 
      * @param string $url URL to redirect to
      */
+
+
+
+
+
+
+
+
+    
     protected function redirect($url)
     {
         $baseUrl = '/Talent-HUB';
@@ -60,4 +70,35 @@ class Controller
             $this->redirect('/login');
         }
     }
+
+    protected function requireRole(string $role): void
+    {
+        if (!$this->isLoggedIn()) {
+            $_SESSION['error'] = 'Please login to access this page.';
+            $this->redirect('/login');
+        }
+
+        $currentRole = $_SESSION['role'] ?? null;
+        error_log("RequireRole debug: required '$role', current '" . $currentRole . "'");
+
+        if ($currentRole !== $role) {
+            $_SESSION['error'] = 'Access denied.';
+            $this->redirect('/403');
+        }
+    }
+
+    /**
+     * Get current logged-in user data
+     */
+    protected function getCurrentUser()
+    {
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
+
+        $repo = new \App\Repository\UserRepository(\App\Core\Database::connection());
+        return $repo->findById($_SESSION['user_id']);
+    }
+
+    
 }

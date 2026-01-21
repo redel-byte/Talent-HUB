@@ -69,6 +69,7 @@ class AuthMiddleware
         // Check role-based access
         $userRole = $_SESSION['role'] ?? null;
         if (!$userRole || !$this->hasRoleAccess($userRole, $uri, $method)) {
+            error_log("AuthMiddleware deny: role '" . $userRole . "' for uri '$uri' method '$method'");
             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
             $this->redirect('/403');
             return false;

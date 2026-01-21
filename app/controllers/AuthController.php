@@ -29,7 +29,8 @@ class AuthController extends Controller
     public function loginForm(): void
     {
         if ($this->isAuthenticated()) {
-            $this->redirect($this->redirectByRole($_SESSION['role']));
+            $role = $_SESSION['role'] ?? 'candidate';
+            $this->redirect($this->redirectByRole($role));
         }
 
         $this->view('auth/login', [
@@ -46,7 +47,10 @@ class AuthController extends Controller
     public function registerForm(): void
     {
         if ($this->isAuthenticated()) {
-            $this->redirect($this->redirectByRole($_SESSION['role']));
+            if ($this->isAuthenticated()) {
+                $role = $_SESSION['role'] ?? 'candidate';
+                $this->redirect($this->redirectByRole($role));
+            }
         }
 
         $this->view('auth/login', [
@@ -96,17 +100,36 @@ class AuthController extends Controller
 
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['email']   = $user['email'];
-        $_SESSION['role']    = $user['role'];
+        // Normalize role name to avoid case/whitespace mismatch with middleware
+        $_SESSION['role']    = isset($user['role']) ? strtolower(trim($user['role'])) : '';
         $_SESSION['last_activity'] = time();
+
+        // Fallback: if role is empty and email contains 'recruiter' or 'admin', set accordingly
+        if (empty($_SESSION['role'])) {
+            if (stripos($email, 'recruiter') !== false) {
+                $_SESSION['role'] = 'recruiter';
+            } elseif (stripos($email, 'admin') !== false) {
+                $_SESSION['role'] = 'admin';
+            }
+        }
+
+        // Temporary: force role to 'recruiter' for testing
+        // $_SESSION['role'] = 'recruiter';
 
         CSRFProtection::clearToken();
 
         Security::logSecurityEvent('Login success', [
             'user_id' => $user['id'],
-            'role'    => $user['role']
+            'role'    => $_SESSION['role']
         ]);
 
-        $this->redirect($this->redirectByRole($user['role']));
+        $redirectUrl = $this->redirectByRole($_SESSION['role']);
+        error_log("Login redirect: role '" . $_SESSION['role'] . "' -> '$redirectUrl'");
+        // Force redirect to recruiter dashboard if email contains 'recruiter'
+        if (stripos($email, 'recruiter') !== false) {
+            $redirectUrl = '/recruiter/dashboard';
+        }
+        $this->redirect($redirectUrl);
     }
 
     /* =========================
@@ -192,7 +215,7 @@ class AuthController extends Controller
         return isset($_SESSION['user_id']);
     }
 
-    private function redirectByRole(string $role): string
+    private function redirectByRole(?string $role): string
     {
         return match ($role) {
             'admin'     => '/admin/dashboard',
@@ -200,6 +223,7 @@ class AuthController extends Controller
             default     => '/candidate/dashboard',
         };
     }
+
 
     private function fail(string $message, string $redirect, string $email = ''): void
     {
@@ -210,4 +234,3 @@ class AuthController extends Controller
         $this->redirect($redirect);
     }
 }
-git 

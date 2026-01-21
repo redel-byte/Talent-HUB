@@ -4,92 +4,85 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\UserRepository;
+use App\Repository\UserRepository;
 
 class CandidateController extends Controller
 {
-    private User $userModel;
+    private UserRepository $userRepository;
 
     public function __construct()
     {
-        if (session_status() == PHP_SESSION_NONE) {
+        if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
+
         $this->requireRole('candidate');
+
+        $this->userRepository = new UserRepository(Database::connection());
     }
 
-    public function dashboard()
+    public function dashboard(): void
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('candidate/dashboard', [
-            'user' => $user,
+            'user'       => $user,
             'page_title' => 'Candidate Dashboard - TalentHub'
         ]);
     }
 
-    public function profile()
+    public function profile(): void
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('candidate/profile', [
-            'user' => $user,
+            'user'       => $user,
             'page_title' => 'My Profile - TalentHub'
         ]);
     }
 
-    public function applications()
+    public function applications(): void
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('candidate/applications', [
-            'user' => $user,
+            'user'       => $user,
             'page_title' => 'My Applications - TalentHub'
         ]);
     }
 
-    public function settings()
+    public function settings(): void
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('candidate/settings', [
-            'user' => $user,
+            'user'       => $user,
             'page_title' => 'Settings - TalentHub'
         ]);
     }
 
-    private function getCurrentUser(): ?array
-    {
-        if (!isset($_SESSION['user_id'])) {
-            return null;
-        }
+    /* =========================
+       HELPERS
+    ==========================*/
 
-        return $this->userModel->findById($_SESSION['user_id']);
-    }
+    // private function getCurrentUser(): ?array
+    // {
+    //     if (!isset($_SESSION['user_id'])) {
+    //         return null;
+    //     }
 
-    protected function requireRole(string $requiredRole): void
-    {
-        if (!$this->isLoggedIn()) {
-            $_SESSION['error'] = 'Please login to access this page.';
-            $this->redirect('/Talent-HUB/login');
-        }
-
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
-            $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-            $this->redirect('/Talent-HUB/403');
-        }
-    }
+    //     return $this->userRepository->findById((int) $_SESSION['user_id']);
+    // }
 }
