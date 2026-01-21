@@ -2,11 +2,7 @@
 
 namespace App\Models;
 
-use App\Core\Database;
-use App\Core\Hashpassword;
-use App\Core\Validator;
-
-class User
+abstract class User
 {
     private ?int $id = null;
     private string $email;
@@ -16,45 +12,9 @@ class User
     {
       $this->pdo = $pdo;
     }
-    public function findByEmail($email)
-    {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
-        $stmt->execute(['email' => $email]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
-    }
-
-    public function findById($id)
-    {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
-    }
-    public function create($email, $password, $role = 'candidate', $firstName = '', $lastName = '')
-    {
-      // Validate email and ensure it doesn't already exist
-      if (!Validator::validateEmail($email) || $this->findByEmail($email)) {
-        return false;
-      }
-
-      $stm = $this->pdo->prepare("INSERT INTO users (email, first_name, last_name, password, role, created_at) VALUES (:email, :first_name, :last_name, :password, :role, NOW())"); 
-      return $stm->execute([
-        'email' => $email,
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'password' => (new Hashpassword($password))->getHashedPassword(),
-        'role' => $role
-      ]);
-    }
-       
-    public function verify(string $email, string $password): bool
-    {
-      $user = $this->findByEmail($email);
-
-      if (!$user) {
-         return false;
-      }
-
-      return password_verify($password, $user['password']);
-    }
+    abstract public function findByEmail($email);
+    abstract public function findById($id);
+    abstract public function create($email, $password, $phond_number, $role = 'candidate', $firstName = '', $lastName = '');
+    abstract public function verify(string $email, string $password);
 }
 

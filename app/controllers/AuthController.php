@@ -4,7 +4,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\User;
+use App\Models\UserModel;
 use App\Core\CSRFProtection;
 use App\Core\Security;
 
@@ -17,8 +17,7 @@ class AuthController extends Controller
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
-        Security::setSecureHeaders();
+        $this->userModel = new UserModel(Database::connection());
     }
 
     public function loginForm()
@@ -50,18 +49,11 @@ class AuthController extends Controller
         // Validate CSRF token
         if (!CSRFProtection::validateRequest()) {
             $_SESSION['error'] = 'Invalid request. Please try again.';
-            Security::logSecurityEvent('CSRF token validation failed', ['email' => $_POST['email'] ?? '']);
             $this->redirect('/login');
         }
 
         // Rate limiting check
         $email = trim($_POST['email'] ?? '');
-        if (!Security::checkRateLimit('login_' . $email, 5, 300)) {
-            $_SESSION['error'] = 'Too many login attempts. Please try again later.';
-            Security::logSecurityEvent('Rate limit exceeded', ['email' => $email]);
-            $this->redirect('/login');
-        }
-
         $password = $_POST['password'] ?? '';
 
         // Input validation
@@ -82,21 +74,17 @@ class AuthController extends Controller
             $_SESSION['role'] = $user['role'] ?? 'candidate';
             $_SESSION['last_activity'] = time();
             
-            // Log successful login
-            Security::logSecurityEvent('Successful login', [
-                'user_id' => $user['id'],
-                'email' => $email,
-                'role' => $user['role']
-            ]);
             
             // Clear CSRF token and redirect
             CSRFProtection::clearToken();
             
             // Role-based redirection
             switch ($_SESSION['role']) {
+                case 'condidat':
                 case 'candidate':
                     $this->redirect('/candidate/dashboard');
                     break;
+                case 'recruteur':
                 case 'recruiter':
                     $this->redirect('/recruiter/dashboard');
                     break;
@@ -109,11 +97,6 @@ class AuthController extends Controller
             }
         }
 
-        // Log failed login attempt
-        Security::logSecurityEvent('Failed login attempt', [
-            'email' => $email,
-            'ip' => Security::getClientIP()
-        ]);
 
         $_SESSION['error'] = 'Invalid email or password.';
         $_SESSION['old_email'] = $email;
@@ -140,89 +123,230 @@ class AuthController extends Controller
         ]);
     }
 
+    public function candidateRegisterForm()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $this->redirect('/');
+        }
+
+        $error = $_SESSION['error'] ?? null;
+        $old_email = $_SESSION['old_email'] ?? '';
+        $success = $_SESSION['success'] ?? null;
+        unset($_SESSION['error'], $_SESSION['old_email'], $_SESSION['success']);
+
+        $this->view('auth/register_candidate', [
+            'error' => $error,
+            'old_email' => $old_email,
+            'success' => $success,
+            'csrf_token' => CSRFProtection::getToken()
+        ]);
+    }
+
+    public function recruiterRegisterForm()
+    {
+        if (isset($_SESSION['user_id'])) {
+            $this->redirect('/');
+        }
+
+        $error = $_SESSION['error'] ?? null;
+        $old_email = $_SESSION['old_email'] ?? '';
+        $success = $_SESSION['success'] ?? null;
+        unset($_SESSION['error'], $_SESSION['old_email'], $_SESSION['success']);
+
+        $this->view('auth/register_recruiter', [
+            'error' => $error,
+            'old_email' => $old_email,
+            'success' => $success,
+            'csrf_token' => CSRFProtection::getToken()
+        ]);
+    }
+
     public function register()
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         // Validate CSRF token
         if (!CSRFProtection::validateRequest()) {
             $_SESSION['error'] = 'Invalid request. Please try again.';
-            Security::logSecurityEvent('CSRF token validation failed during registration', ['email' => $_POST['email'] ?? '']);
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         $email = Security::sanitize(trim($_POST['email'] ?? ''));
         $firstName = Security::sanitize(trim($_POST['first_name'] ?? ''));
         $lastName = Security::sanitize(trim($_POST['last_name'] ?? ''));
         $password = $_POST['password'] ?? '';
+        $phoneNumber = trim($_POST['phoneNumber'] ?? '');
         $confirm = $_POST['confirm_password'] ?? '';
-        $role = Security::sanitize($_POST['role'] ?? 'candidate');
-
-        // Rate limiting check
-        if (!Security::checkRateLimit('register_' . Security::getClientIP(), 3, 3600)) {
-            $_SESSION['error'] = 'Too many registration attempts. Please try again later.';
-            Security::logSecurityEvent('Registration rate limit exceeded', ['ip' => Security::getClientIP()]);
-            $this->redirect('/Talent-HUB/register');
-        }
+        $role = $_POST['role'] ?? 'candidate';
 
         // Input validation
         if (!Security::isValidEmail($email)) {
             $_SESSION['error'] = 'Please provide a valid email address.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         if ($password !== $confirm) {
             $_SESSION['error'] = 'Passwords do not match.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         if (!Security::isStrongPassword($password)) {
             $_SESSION['error'] = 'Password must be at least 8 characters and contain letters and numbers.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         // Validate role
         if (!in_array($role, ['candidate', 'recruiter'])) {
             $_SESSION['error'] = 'Invalid role selected.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         // Check if email already exists
         if ($this->userModel->findByEmail($email)) {
             $_SESSION['error'] = 'Email already registered.';
             $_SESSION['old_email'] = $email;
-            $this->redirect('/Talent-HUB/register');
+            $this->redirect('/register');
         }
 
         // Create user
-        $created = $this->userModel->create($email, $password, $role, $firstName, $lastName);
+        $created = $this->userModel->create($email, $password, $phoneNumber, $role, $firstName, $lastName);
         if ($created) {
-            Security::logSecurityEvent('User registration successful', [
-                'email' => $email,
-                'role' => $role,
-                'ip' => Security::getClientIP()
-            ]);
-            
             $_SESSION['success'] = 'Account created successfully. You can now log in.';
             CSRFProtection::clearToken();
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
-
-        Security::logSecurityEvent('User registration failed', [
-            'email' => $email,
-            'role' => $role,
-            'ip' => Security::getClientIP()
-        ]);
-
         $_SESSION['error'] = 'Failed to create account. Please try again.';
         $_SESSION['old_email'] = $email;
-        $this->redirect('/Talent-HUB/register');
+        $this->redirect('/register');
+    }
+
+    public function candidateRegister()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/register/candidate');
+        }
+
+        // Validate CSRF token
+        if (!CSRFProtection::validateRequest()) {
+            $_SESSION['error'] = 'Invalid request. Please try again.';
+            $this->redirect('/register/candidate');
+        }
+
+        $email = Security::sanitize(trim($_POST['email'] ?? ''));
+        $firstName = Security::sanitize(trim($_POST['first_name'] ?? ''));
+        $lastName = Security::sanitize(trim($_POST['last_name'] ?? ''));
+        $password = $_POST['password'] ?? '';
+        $phoneNumber = trim($_POST['phoneNumber'] ?? '');
+        $confirm = $_POST['confirm_password'] ?? '';
+        $role = 'candidate';
+
+        // Input validation
+        if (!Security::isValidEmail($email)) {
+            $_SESSION['error'] = 'Please provide a valid email address.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/candidate');
+        }
+
+        if ($password !== $confirm) {
+            $_SESSION['error'] = 'Passwords do not match.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/candidate');
+        }
+
+        if (!Security::isStrongPassword($password)) {
+            $_SESSION['error'] = 'Password must be at least 8 characters and contain letters and numbers.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/candidate');
+        }
+
+        // Check if email already exists
+        if ($this->userModel->findByEmail($email)) {
+            $_SESSION['error'] = 'Email already registered.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/candidate');
+        }
+
+        // Create user
+        $created = $this->userModel->create($email, $password, $phoneNumber, $role, $firstName, $lastName);
+        if ($created) {
+            $_SESSION['success'] = 'Candidate account created successfully. You can now log in.';
+            CSRFProtection::clearToken();
+            $this->redirect('/login');
+        }
+        $_SESSION['error'] = 'Failed to create account. Please try again.';
+        $_SESSION['old_email'] = $email;
+        $this->redirect('/register/candidate');
+    }
+
+    public function recruiterRegister()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/register/recruiter');
+        }
+
+        // Validate CSRF token
+        if (!CSRFProtection::validateRequest()) {
+            $_SESSION['error'] = 'Invalid request. Please try again.';
+            $this->redirect('/register/recruiter');
+        }
+
+        $email = Security::sanitize(trim($_POST['email'] ?? ''));
+        $firstName = Security::sanitize(trim($_POST['first_name'] ?? ''));
+        $lastName = Security::sanitize(trim($_POST['last_name'] ?? ''));
+        $password = $_POST['password'] ?? '';
+        $phoneNumber = trim($_POST['phoneNumber'] ?? '');
+        $confirm = $_POST['confirm_password'] ?? '';
+        $role = 'recruiter';
+        $companyName = Security::sanitize(trim($_POST['company_name'] ?? ''));
+
+        // Input validation
+        if (!Security::isValidEmail($email)) {
+            $_SESSION['error'] = 'Please provide a valid work email address.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/recruiter');
+        }
+
+        if ($password !== $confirm) {
+            $_SESSION['error'] = 'Passwords do not match.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/recruiter');
+        }
+
+        if (!Security::isStrongPassword($password)) {
+            $_SESSION['error'] = 'Password must be at least 8 characters and contain letters and numbers.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/recruiter');
+        }
+
+        if (empty($companyName)) {
+            $_SESSION['error'] = 'Company name is required.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/recruiter');
+        }
+
+        // Check if email already exists
+        if ($this->userModel->findByEmail($email)) {
+            $_SESSION['error'] = 'Email already registered.';
+            $_SESSION['old_email'] = $email;
+            $this->redirect('/register/recruiter');
+        }
+
+        // Create user (note: company_name would need to be stored in a separate company table)
+        $created = $this->userModel->create($email, $password, $phoneNumber, $role, $firstName, $lastName);
+        if ($created) {
+            $_SESSION['success'] = 'Employer account created successfully. You can now log in.';
+            CSRFProtection::clearToken();
+            $this->redirect('/login');
+        }
+        $_SESSION['error'] = 'Failed to create account. Please try again.';
+        $_SESSION['old_email'] = $email;
+        $this->redirect('/register/recruiter');
     }
 
     public function logout()
@@ -231,29 +355,31 @@ class AuthController extends Controller
         if (session_id() !== '') {
             session_destroy();
         }
-        $this->redirect('/Talent-HUB/login');
+        $this->redirect('/login');
     }
 
     public function home()
     {
         if (!isset($_SESSION['user_id'])) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         // Redirect to role-specific dashboard
         $role = $_SESSION['role'] ?? 'candidate';
         switch ($role) {
+            case 'condidat':
             case 'candidate':
-                $this->redirect('/Talent-HUB/candidate/dashboard');
+                $this->redirect('/candidate/dashboard');
                 break;
+            case 'recruteur':
             case 'recruiter':
-                $this->redirect('/Talent-HUB/recruiter/dashboard');
+                $this->redirect('/recruiter/dashboard');
                 break;
             case 'admin':
-                $this->redirect('/Talent-HUB/admin/dashboard');
+                $this->redirect('/admin/dashboard');
                 break;
             default:
-                $this->redirect('/Talent-HUB/login');
+                $this->redirect('/login');
                 break;
         }
     }

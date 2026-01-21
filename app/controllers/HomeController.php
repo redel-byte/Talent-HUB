@@ -52,4 +52,12 @@ class HomeController extends Controller
             'page_title' => 'Blog - TalentHub Insights'
         ]);
     }
+
+    public function howItWorks()
+    {
+        // How it works page explaining the platform
+        $this->view('how_it_works_template', [
+            'page_title' => 'How It Works - TalentHub'
+        ]);
+    }
 }

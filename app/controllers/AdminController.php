@@ -4,18 +4,18 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Models\User;
+use App\Models\UserModel;
 
 class AdminController extends Controller
 {
-    private User $userModel;
+    private UserModel $userModel;
 
     public function __construct()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
+        $this->userModel = new UserModel(Database::connection());
         $this->requireRole('admin');
     }
 
@@ -23,7 +23,7 @@ class AdminController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('admin/dashboard', [
@@ -36,7 +36,7 @@ class AdminController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('admin/users', [
@@ -49,7 +49,7 @@ class AdminController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('admin/roles', [
@@ -62,7 +62,7 @@ class AdminController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('admin/system', [
@@ -75,34 +75,12 @@ class AdminController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('admin/logs', [
             'user' => $user,
             'page_title' => 'System Logs - TalentHub'
         ]);
-    }
-
-    private function getCurrentUser(): ?array
-    {
-        if (!isset($_SESSION['user_id'])) {
-            return null;
-        }
-
-        return $this->userModel->findById($_SESSION['user_id']);
-    }
-
-    protected function requireRole(string $requiredRole): void
-    {
-        if (!$this->isLoggedIn()) {
-            $_SESSION['error'] = 'Please login to access this page.';
-            $this->redirect('/Talent-HUB/login');
-        }
-
-        if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
-            $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-            $this->redirect('/Talent-HUB/403');
-        }
     }
 }
