@@ -2,20 +2,20 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
-use App\Core\Database;
-use App\Models\User;
+use App\Middleware\Controller;
+use App\Middleware\Database;
+use App\Models\UserModel;
 
 class RecruiterController extends Controller
 {
-    private User $userModel;
+    private UserModel $userModel;
 
     public function __construct()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
+        $this->userModel = new UserModel(Database::connection());
         $this->requireRole('recruiter');
     }
 
@@ -84,7 +84,7 @@ class RecruiterController extends Controller
         ]);
     }
 
-    private function getCurrentUser(): ?array
+    protected function getCurrentUser(): ?array
     {
         if (!isset($_SESSION['user_id'])) {
             return null;

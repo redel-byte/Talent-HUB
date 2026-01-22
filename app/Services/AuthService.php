@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Repositories\UserRepository;
-use App\Core\Hashpassword;
-use App\Core\Security;
+use App\Middleware\Hashpassword;
+use App\Middleware\Security;
 
 class AuthService
 {

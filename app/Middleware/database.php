@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace App\Middleware;
 use PDO;
 use Pdo\Mysql;
 use Dotenv\Dotenv;

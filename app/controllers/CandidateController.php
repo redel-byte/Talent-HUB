@@ -2,9 +2,10 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
-use App\Core\Database;
+use App\Middleware\Controller;
+use App\Middleware\Database;
 use App\Models\User;
+use App\Models\UserModel;
 
 class CandidateController extends Controller
 {
@@ -15,7 +16,7 @@ class CandidateController extends Controller
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
+        $this->userModel = new UserModel(Database::connection());
         $this->requireRole('candidate');
     }
 
@@ -71,7 +72,7 @@ class CandidateController extends Controller
         ]);
     }
 
-    private function getCurrentUser(): ?array
+    protected function getCurrentUser(): ?array
     {
         if (!isset($_SESSION['user_id'])) {
             return null;

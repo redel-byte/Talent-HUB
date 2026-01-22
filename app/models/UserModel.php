@@ -2,8 +2,8 @@
 namespace App\Models;
 
 // use App\Core\Database;
-use App\Core\Hashpassword;
-use App\Core\Validator;
+use App\Middleware\Hashpassword;
+use App\Middleware\Validator;
 use App\Models\User;
 
 class UserModel extends User

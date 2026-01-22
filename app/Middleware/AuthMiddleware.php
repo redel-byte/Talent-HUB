@@ -1,11 +1,7 @@
 <?php
 
-namespace App\Core;
+namespace App\Middleware;
 
-/**
- * Middleware for role-based route protection
- * Ensures users are authenticated and have appropriate roles
- */
 class AuthMiddleware
 {
     private array $publicRoutes = [

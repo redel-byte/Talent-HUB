@@ -2,11 +2,11 @@
 
 namespace App\Controllers;
 
-use App\Core\Controller;
-use App\Core\Database;
+use App\Middleware\Controller;
+use App\Middleware\Database;
 use App\Models\UserModel;
-use App\Core\CSRFProtection;
-use App\Core\Security;
+use App\Middleware\CSRFProtection;
+use App\Middleware\Security;
 
 class AuthController extends Controller
 {

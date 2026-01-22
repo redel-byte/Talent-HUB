@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace App\Middleware;
 
 class Controller
 {
@@ -53,7 +53,7 @@ class Controller
         }
         
         $userId = $_SESSION['user_id'];
-        $userModel = new \App\Models\UserModel(\App\Core\Database::connection());
+        $userModel = new \App\Models\UserModel(\App\Middleware\Database::connection());
         return $userModel->findById($userId);
     }
 }
