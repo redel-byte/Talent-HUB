@@ -74,6 +74,28 @@
         </div>
     </div>
 
+    <!-- Quick Actions -->
+    <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Quick Actions</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/Talent-HUB/recruiter/company/create" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-building text-2xl text-blue-600 mb-2"></i>
+                <h3 class="font-medium">Create Company</h3>
+                <p class="text-sm text-gray-600">Set up your company profile</p>
+            </a>
+            <a href="/Talent-HUB/recruiter/jobs/create" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-plus text-2xl text-green-600 mb-2"></i>
+                <h3 class="font-medium">Post New Job</h3>
+                <p class="text-sm text-gray-600">Create a new job posting</p>
+            </a>
+            <a href="/Talent-HUB/recruiter/jobs" class="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                <i class="fas fa-list text-2xl text-purple-600 mb-2"></i>
+                <h3 class="font-medium">Manage Jobs</h3>
+                <p class="text-sm text-gray-600">View and edit your job postings</p>
+            </a>
+        </div>
+    </div>
+
     <!-- Recent Activity -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Recent Applications -->

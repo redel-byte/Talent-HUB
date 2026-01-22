@@ -12,10 +12,10 @@ namespace App\Models;
 
 abstract class User
 {
-  protected int $id;
-  protected string $fullname;
-  protected string $email;
-  protected string $password;
-  protected string $phone_number;
-  protected int $role_id;
+  public int $id;
+  public $fullname;
+  public string $email;
+  public string $password;
+  public string $phone_number;
+  public int $role_id;
 }

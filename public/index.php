@@ -54,6 +54,11 @@ $router->addRouter('GET', '/recruiter/jobs', [RecruiterController::class, 'jobs'
 $router->addRouter('GET', '/recruiter/candidates', [RecruiterController::class, 'candidates']);
 $router->addRouter('GET', '/recruiter/company', [RecruiterController::class, 'company']);
 $router->addRouter('GET', '/recruiter/settings', [RecruiterController::class, 'settings']);
+$router->addRouter('GET', '/recruiter/company/create', [RecruiterController::class, 'createCompanyForm']);
+$router->addRouter('POST', '/recruiter/company/create', [RecruiterController::class, 'createCompany']);
+$router->addRouter('GET', '/recruiter/jobs/create', [RecruiterController::class, 'createJobForm']);
+$router->addRouter('POST', '/recruiter/jobs/create', [RecruiterController::class, 'createJob']);
+$router->addRouter('GET', '/recruiter/applications', [RecruiterController::class, 'applications']);
 
 // Admin Routes
 $router->addRouter('GET', '/admin', [AdminController::class, 'dashboard']);

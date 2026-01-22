@@ -1,17 +1,22 @@
 <?php
 
+namespace App\Repository;
+use PDO;
 class CompanyRepository
 {
-    public function __construct(private PDO $pdo) {}
+    private \PDO $pdo;
 
-    public function create(array $data): bool
-    {
+    public function __construct(PDO $pdo) {
+        $this->pdo = $pdo;
+    }
+
+    public function create(int $userId, array $data): bool{
         $stmt = $this->pdo->prepare(
-            "INSERT INTO company (name, address, email, created_at)
-             VALUES (:name, :address, :email, NOW())"
+            "INSERT INTO company (id, name, address, email, created_at)
+             VALUES (:id, :name, :address, :email, NOW())"
         );
-         $stmt->execute($data);
-        return (int) $this->pdo->lastInsertId();
+        $data['id'] = $userId;
+        return $stmt->execute($data);
     }
 
     public function findByUser(int $userId): ?array
