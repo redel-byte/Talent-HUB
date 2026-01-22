@@ -6,10 +6,12 @@ use App\Middleware\Controller;
 use App\Middleware\Database;
 use App\Models\User;
 use App\Models\UserModel;
+use App\Repositories\CandidateRepository;
 
 class CandidateController extends Controller
 {
     private User $userModel;
+    private CandidateRepository $candidateRepository;
 
     public function __construct()
     {
@@ -17,6 +19,7 @@ class CandidateController extends Controller
             session_start();
         }
         $this->userModel = new UserModel(Database::connection());
+        $this->candidateRepository = new CandidateRepository(Database::connection());
         $this->requireRole('candidate');
     }
 
@@ -27,8 +30,15 @@ class CandidateController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
+        // Get candidate statistics
+        $stats = $this->candidateRepository->getCandidateStats($user['id']);
+        $recentApplications = $this->candidateRepository->getCandidateApplications($user['id'], ['pending', 'reviewed', 'accepted']);
+        $recentApplications = array_slice($recentApplications, 0, 3); // Show only 3 most recent
+
         $this->view('candidate/dashboard', [
             'user' => $user,
+            'stats' => $stats,
+            'recentApplications' => $recentApplications,
             'page_title' => 'Candidate Dashboard - TalentHub'
         ]);
     }
@@ -40,8 +50,14 @@ class CandidateController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
+        // Get candidate profile data
+        $profile = $this->candidateRepository->getCandidateProfile($user['id']);
+        $skills = $this->candidateRepository->getCandidateSkills($user['id']);
+
         $this->view('candidate/profile', [
             'user' => $user,
+            'profile' => $profile,
+            'skills' => $skills,
             'page_title' => 'My Profile - TalentHub'
         ]);
     }
@@ -53,8 +69,14 @@ class CandidateController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
+        // Get all candidate applications
+        $applications = $this->candidateRepository->getCandidateApplications($user['id']);
+        $stats = $this->candidateRepository->getCandidateStats($user['id']);
+
         $this->view('candidate/applications', [
             'user' => $user,
+            'applications' => $applications,
+            'stats' => $stats,
             'page_title' => 'My Applications - TalentHub'
         ]);
     }
@@ -92,5 +114,18 @@ class CandidateController extends Controller
             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
             $this->redirect('/Talent-HUB/403');
         }
+    }
+
+    private function getStatusColor(string $status): string
+    {
+        $colors = [
+            'pending' => 'yellow',
+            'reviewed' => 'blue',
+            'accepted' => 'green',
+            'rejected' => 'red',
+            'interview' => 'purple'
+        ];
+        
+        return $colors[$status] ?? 'gray';
     }
 }

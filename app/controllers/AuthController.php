@@ -74,6 +74,14 @@ class AuthController extends Controller
             $_SESSION['role'] = $user['role'] ?? 'candidate';
             $_SESSION['last_activity'] = time();
             
+            // Set localStorage for JavaScript navigation
+            // This would be better handled via API, but for now we'll set it server-side
+            echo "<script>
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('userRole', '" . ($user['role'] ?? 'candidate') . "');
+                localStorage.setItem('userEmail', '" . $user['email'] . "');
+                localStorage.setItem('userId', '" . $user['id'] . "');
+            </script>";
             
             // Clear CSRF token and redirect
             CSRFProtection::clearToken();
@@ -351,6 +359,14 @@ class AuthController extends Controller
 
     public function logout()
     {
+        // Clear localStorage
+        echo "<script>
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userId');
+        </script>";
+        
         $_SESSION = [];
         if (session_id() !== '') {
             session_destroy();

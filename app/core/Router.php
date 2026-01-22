@@ -16,12 +16,21 @@ class Router
         ];
     }
 
-    public function dispatch(): void
+    private function processUri(): string
     {
         $uri = str_replace("/Talent-HUB", "", rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"));
+        return $uri === "" ? "/" : $uri;
+    }
+
+    public function getUri(): string
+    {
+        return $this->processUri();
+    }
+
+    public function dispatch(): void
+    {
+        $uri = $this->processUri();
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-        
-        if ($uri === "") $uri = "/";
 
         foreach ($this->routes as $route) {
             if ($route['method'] === $method && $route['path'] === $uri) {

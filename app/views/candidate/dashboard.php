@@ -1,5 +1,20 @@
 <?php ob_start(); ?>
 
+<?php
+function getStatusColor(string $status): string
+{
+    $colors = [
+        'pending' => 'yellow',
+        'reviewed' => 'blue',
+        'accepted' => 'green',
+        'rejected' => 'red',
+        'interview' => 'purple'
+    ];
+    
+    return $colors[$status] ?? 'gray';
+}
+?>
+
 <!-- Dashboard Content -->
 <div class="px-4 py-6 sm:px-0">
     <div class="mb-8">
@@ -18,7 +33,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
-                            <dd class="text-lg font-medium text-gray-900">12</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= $stats['total_applications'] ?? 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -34,7 +49,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Profile Views</dt>
-                            <dd class="text-lg font-medium text-gray-900">48</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= $profile['application_count'] ?? 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -49,8 +64,8 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Saved Jobs</dt>
-                            <dd class="text-lg font-medium text-gray-900">7</dd>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Pending Applications</dt>
+                            <dd class="text-lg font-medium text-gray-900"><?= $stats['pending_count'] ?? 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -65,8 +80,8 @@
                     </div>
                     <div class="ml-5 w-0 flex-1">
                         <dl>
-                            <dt class="text-sm font-medium text-gray-500 truncate">Profile Completion</dt>
-                            <dd class="text-lg font-medium text-gray-900">85%</dd>
+                            <dt class="text-sm font-medium text-gray-500 truncate">Accepted Applications</dt>
+                            <dd class="text-lg font-medium text-gray-900"><?= $stats['accepted_count'] ?? 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -81,44 +96,30 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Applications</h3>
                 <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-building text-blue-600"></i>
+                    <?php if (!empty($recentApplications)): ?>
+                        <?php foreach ($recentApplications as $application): ?>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-building text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($application['title']) ?></p>
+                                        <p class="text-sm text-gray-500"><?= htmlspecialchars($application['company_name'] ?? 'Unknown Company') ?> • Applied <?= isset($application['applied_at']) ? date('M j, Y', strtotime($application['applied_at'])) : 'Recently' ?></p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 text-xs font-medium bg-<?= getStatusColor($application['status']) ?>-100 text-<?= getStatusColor($application['status']) ?>-800 rounded-full">
+                                    <?= ucfirst(htmlspecialchars($application['status'])) ?>
+                                </span>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Senior Developer</p>
-                                <p class="text-sm text-gray-500">Tech Corp • Applied 2 days ago</p>
-                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-center py-8">
+                            <i class="fas fa-file-alt text-gray-400 text-4xl mb-4"></i>
+                            <p class="text-gray-500">No applications yet</p>
+                            <p class="text-sm text-gray-400 mt-2">Start applying for jobs to see them here</p>
                         </div>
-                        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Under Review</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-building text-green-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Frontend Developer</p>
-                                <p class="text-sm text-gray-500">StartupXYZ • Applied 5 days ago</p>
-                            </div>
-                        </div>
-                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Interview</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-building text-red-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Full Stack Developer</p>
-                                <p class="text-sm text-gray-500">Digital Agency • Applied 1 week ago</p>
-                            </div>
-                        </div>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Not Selected</span>
-                    </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="mt-4">
@@ -189,16 +190,16 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Quick Actions</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button class="quick-action flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-action="search-jobs">
                         <i class="fas fa-search mr-2"></i> Search Jobs
                     </button>
-                    <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button class="quick-action flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-action="upload-resume">
                         <i class="fas fa-upload mr-2"></i> Upload Resume
                     </button>
-                    <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button class="quick-action flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-action="update-profile">
                         <i class="fas fa-user-edit mr-2"></i> Update Profile
                     </button>
-                    <button class="flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button class="quick-action flex items-center justify-center px-4 py-3 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" data-action="notifications">
                         <i class="fas fa-bell mr-2"></i> Notifications
                     </button>
                 </div>

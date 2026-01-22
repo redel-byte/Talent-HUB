@@ -1,9 +1,15 @@
 <?php
-namespace App\Repository;
+namespace App\Repositories;
 use PDO;
-class ApplicationRepository
+
+class ApplicationRepository extends BaseRepository
 {
-    public function __construct(private PDO $pdo) {}
+    protected string $table = 'applications';
+    
+    public function __construct(PDO $pdo)
+    {
+        parent::__construct($pdo);
+    }
 
     public function apply(array $data): bool
     {

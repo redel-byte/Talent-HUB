@@ -1,14 +1,15 @@
 <?php
 
-namespace   App\Repository;
+namespace App\Repositories;
 use PDO;
-class CategorieRepository
+
+class CategorieRepository extends BaseRepository
 {
+    protected string $table = 'categories';
     
-    // use PDO;
-    // protected \PDO $pdo;
-    public function __construct(private PDO $pdo) {
-        $this->pdo = $pdo;
+    public function __construct(PDO $pdo)
+    {
+        parent::__construct($pdo);
     }
 
     public function getCategories(): array

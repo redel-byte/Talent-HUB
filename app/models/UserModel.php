@@ -5,29 +5,27 @@ namespace App\Models;
 use App\Middleware\Hashpassword;
 use App\Middleware\Validator;
 use App\Models\User;
+use App\Repositories\UserRepository;
 
 class UserModel extends User
 {
     private ?int $id = null;
     private string $email;
     private string $password;  
-    protected \PDO $pdo;
+    private UserRepository $userRepository;
+    
     public function __construct($pdo)
     {
-      $this->pdo = $pdo;
+        $this->userRepository = new UserRepository($pdo);
     }
     public function findByEmail($email)
     {
-        $stmt = $this->pdo->prepare("SELECT u.*, r.name as role FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.email = :email;");
-        $stmt->execute(['email' => $email]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        return $this->userRepository->findByEmail($email);
     }
 
     public function findById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT u.*, r.name as role FROM users u LEFT JOIN roles r ON u.role_id = r.id WHERE u.id = :id");
-        $stmt->execute(['id' => $id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        return $this->userRepository->findById($id);
     }
     public function create($email, $password, $phone_number, $role = 'candidate', $firstName = '', $lastName = '')
     {
@@ -36,37 +34,13 @@ class UserModel extends User
         return false;
       }
 
-      // Get role_id from role name
-      $roleStmt = $this->pdo->prepare("SELECT id FROM roles WHERE name = :role");
-      $roleStmt->execute(['role' => $role]);
-      $roleData = $roleStmt->fetch(\PDO::FETCH_ASSOC);
-      
-      if (!$roleData) {
-        return false; // Role not found
-      }
-      
-      $roleId = $roleData['id'];
-      $fullname = trim($firstName . ' ' . $lastName);
-
-      $stm = $this->pdo->prepare("INSERT INTO users (email, fullname, password, role_id, created_at, phone_number) VALUES (:email, :fullname, :password, :role_id, NOW(), :phone_number)"); 
-      return $stm->execute([
-        'email' => $email,
-        'fullname' => $fullname,
-        'password' => (new Hashpassword($password))->getHashedPassword(),
-        'phone_number' =>$phone_number,
-        'role_id' => $roleId
-      ]);
+      $hashedPassword = (new Hashpassword($password))->getHashedPassword();
+      return $this->userRepository->createWithRole($email, $hashedPassword, $phone_number, $role, $firstName, $lastName);
     }
        
     public function verify(string $email, string $password): bool
     {
-      $user = $this->findByEmail($email);
-
-      if (!$user) {
-         return false;
-      }
-
-      return password_verify($password, $user['password']);
+      return $this->userRepository->verifyPassword($email, $password);
     }
 }
 

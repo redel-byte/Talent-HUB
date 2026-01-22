@@ -12,16 +12,14 @@ use App\Controllers\AdminController;
 $authMiddleware = new AuthMiddleware();
 
 // Get current request info
-$uri = str_replace("/Talent-HUB", "", rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), "/"));
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-if ($uri === "") $uri = "/";
 
 // Apply middleware protection
+$router = new Router();
+$uri = $router->getUri();
 if (!$authMiddleware->handle($uri, $method)) {
     exit(); // Middleware handled redirect
 }
-
-$router = new Router();
 
 // Public Routes - Main Home Page
 $router->addRouter('GET', '/', [HomeController::class, 'index']);
