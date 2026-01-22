@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../admin/layout.php'; ?>
+<?php ob_start(); ?>
 
 <div class="bg-white shadow rounded-lg p-6">
     <div class="flex justify-between items-center mb-6">
@@ -7,7 +7,7 @@
             <i class="fas fa-plus mr-2"></i> Add New User
         </button>
     </div>
-    
+
     <!-- Search and Filter -->
     <div class="mb-6 p-4 bg-gray-50 rounded-lg">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -32,7 +32,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Users Table -->
     <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -45,80 +45,57 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
+
             <tbody class="bg-white divide-y divide-gray-200">
+            <?php if (!empty($users)): ?>
+                <?php foreach ($users as $u): ?>
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                                    <span class="text-white text-sm font-medium">
+                                        <?= strtoupper(substr($u['fullname'], 0, 1)) ?>
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">
+                                        <?= htmlspecialchars($u['fullname']) ?>
+                                    </div>
+                                    <div class="text-sm text-gray-500">
+                                        <?= htmlspecialchars($u['email']) ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">
+                                <?= htmlspecialchars($u['role']) ?>
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">
+                                Active
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <?= htmlspecialchars($u['created_at']) ?>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-red-600 hover:text-red-900">Delete</button>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php else: ?>
                 <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">JD</span>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">John Doe</div>
-                                <div class="text-sm text-gray-500">john.doe@example.com</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded">Admin</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">Active</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 15, 2026</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
+                    <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">
+                        No users found.
                     </td>
                 </tr>
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">AS</span>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">Alice Smith</div>
-                                <div class="text-sm text-gray-500">alice.smith@example.com</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">Recruiter</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded">Active</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 10, 2026</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">BJ</span>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">Bob Johnson</div>
-                                <div class="text-sm text-gray-500">bob.johnson@example.com</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">Candidate</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded">Inactive</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">Mar 5, 2026</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-red-600 hover:text-red-900">Delete</button>
-                    </td>
-                </tr>
+            <?php endif; ?>
             </tbody>
         </table>
     </div>
-    
+
     <div class="mt-6">
         <nav class="flex justify-center">
             <div class="flex space-x-2">
@@ -129,3 +106,8 @@
         </nav>
     </div>
 </div>
+
+<?php
+$content    = ob_get_clean();
+$page_title = $page_title ?? 'Manage Users - TalentHub';
+require __DIR__ . '/layout.php';

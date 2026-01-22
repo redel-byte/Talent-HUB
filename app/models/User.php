@@ -2,59 +2,103 @@
 
 namespace App\Models;
 
-use App\Core\Database;
-use App\Core\Hashpassword;
-use App\Core\Validator;
+use PDO;
 
 class User
 {
-    private ?int $id = null;
-    private string $email;
-    private string $password;  
-    protected \PDO $pdo;
-    public function __construct($pdo)
+    private PDO $pdo;
+
+    public function __construct(PDO $pdo)
     {
-      $this->pdo = $pdo;
+        $this->pdo = $pdo;
     }
-    public function findByEmail($email)
+
+    // ======================
+    // Auth helpers
+    // ======================
+
+    public function findByEmail(string $email): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $sql = "
+            SELECT 
+                u.id,
+                u.fullname,
+                u.email,
+                u.password,
+                u.phone_number,
+                u.role_id,
+                r.name AS role,
+                u.created_at,
+                u.archived_at
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE u.email = :email
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['email' => $email]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        $user = $stmt->fetch();
+
+        return $user ?: null;
     }
 
-    public function findById($id)
+    public function findById(int $id): ?array
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
+        $sql = "
+            SELECT 
+                u.id,
+                u.fullname,
+                u.email,
+                u.phone_number,
+                u.role_id,
+                r.name AS role,
+                u.created_at,
+                u.archived_at
+            FROM users u
+            JOIN roles r ON u.role_id = r.id
+            WHERE u.id = :id
+            LIMIT 1
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['id' => $id]);
-        return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
+        $user = $stmt->fetch();
+
+        return $user ?: null;
     }
-    public function create($email, $password, $role = 'candidate', $firstName = '', $lastName = '')
-    {
-      // Validate email and ensure it doesn't already exist
-      if (!Validator::validateEmail($email) || $this->findByEmail($email)) {
-        return false;
-      }
 
-      $stm = $this->pdo->prepare("INSERT INTO users (email, first_name, last_name, password, role, created_at) VALUES (:email, :first_name, :last_name, :password, :role, NOW())"); 
-      return $stm->execute([
-        'email' => $email,
-        'first_name' => $firstName,
-        'last_name' => $lastName,
-        'password' => (new Hashpassword($password))->getHashedPassword(),
-        'role' => $role
-      ]);
-    }
-       
-    public function verify(string $email, string $password): bool
-    {
-      $user = $this->findByEmail($email);
+    public function create(
+        string $email,
+        string $password,
+        string $roleName,
+        string $firstName,
+        string $lastName
+    ): bool {
+        // get role_id from roles.name
+        $sqlRole = "SELECT id FROM roles WHERE name = :name LIMIT 1";
+        $stmtRole = $this->pdo->prepare($sqlRole);
+        $stmtRole->execute(['name' => $roleName]);
+        $role = $stmtRole->fetch();
 
-      if (!$user) {
-         return false;
-      }
+        if (!$role) {
+            return false;
+        }
 
-      return password_verify($password, $user['password']);
+        $fullname = trim($firstName . ' ' . $lastName);
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+
+        $sql = "
+            INSERT INTO users (fullname, email, password, phone_number, role_id)
+            VALUES (:fullname, :email, :password, NULL, :role_id)
+        ";
+
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute([
+            'fullname' => $fullname,
+            'email'    => $email,
+            'password' => $hash,
+            'role_id'  => $role['id'],
+        ]);
     }
 }
-
