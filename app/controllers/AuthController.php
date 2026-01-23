@@ -49,7 +49,6 @@ class AuthController extends Controller
             $this->redirect('/login');
         }
 
-        // CSRF
         if (!CSRFProtection::validateRequest()) {
             $_SESSION['error'] = 'Invalid request. Please try again.';
             Security::logSecurityEvent('CSRF token validation failed', [
@@ -58,7 +57,6 @@ class AuthController extends Controller
             $this->redirect('/login');
         }
 
-        // Rate limit
         $email = trim($_POST['email'] ?? '');
         if (!Security::checkRateLimit('login_' . $email, 5, 300)) {
             $_SESSION['error'] = 'Too many login attempts. Please try again later.';
@@ -68,14 +66,12 @@ class AuthController extends Controller
 
         $password = $_POST['password'] ?? '';
 
-        // Validation
         if (empty($email) || empty($password) || !Security::isValidEmail($email)) {
             $_SESSION['error']     = 'Please provide a valid email and password.';
             $_SESSION['old_email'] = $email;
             $this->redirect('/login');
         }
 
-        // Authenticate
         $user = $this->userModel->findByEmail($email);
 
         if ($user && password_verify($password, $user['password'])) {
@@ -84,7 +80,19 @@ class AuthController extends Controller
 
             $_SESSION['user_id']       = $user['id'];
             $_SESSION['email']         = $user['email'];
-            $_SESSION['role']          = strtolower($user['role'] ?? 'candidate');
+
+            $roleId = (int)($user['role_id'] ?? 0);
+            $role   = 'candidate';
+
+            if ($roleId === 1) {
+                $role = 'admin';
+            } elseif ($roleId === 2) {
+                $role = 'recruiter';
+            } elseif ($roleId === 3) {
+                $role = 'candidate';
+            }
+
+            $_SESSION['role']          = $role;
             $_SESSION['last_activity'] = time();
 
             Security::logSecurityEvent('Successful login', [
@@ -111,7 +119,6 @@ class AuthController extends Controller
             }
         }
 
-        // Failed login
         Security::logSecurityEvent('Failed login attempt', [
             'email' => $email,
             'ip'    => Security::getClientIP(),

@@ -34,9 +34,10 @@
                         <a href="/Talent-HUB/admin/system" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-cogs mr-1"></i> System
                         </a>
-                        <a href="/Talent-HUB/admin/logs" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-list-alt mr-1"></i> Logs
-                        </a>
+                        <a href="/Talent-HUB/admin/tags" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-list-alt mr-1"></i> Tags
+</a>
+
                     </div>
                     
                     <!-- User Menu -->

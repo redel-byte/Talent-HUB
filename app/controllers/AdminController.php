@@ -6,19 +6,26 @@ use App\Core\Controller;
 use App\Core\Database;
 use App\Models\User;
 use App\Repositories\UserRepository;
+use App\Repositories\TagRepository;
+// use App\Repositories\CategoryRepository;
 
 class AdminController extends Controller
 {
     private User $userModel;
     private UserRepository $userRepo;
+    private TagRepository $tagRepo;
+    // private CategoryRepository $categoryRepo;
 
     public function __construct()
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new User(Database::connection());
-        $this->userRepo  = new UserRepository();
+
+        $this->userModel    = new User(Database::connection());
+        $this->userRepo     = new UserRepository();
+        $this->tagRepo      = new TagRepository();
+        // $this->categoryRepo = new CategoryRepository();
     }
 
     public function dashboard(): void
@@ -29,11 +36,16 @@ class AdminController extends Controller
         $totalUsers = $this->userRepo->countAll();
         $roleCounts = $this->userRepo->countByRole();
 
+        $totalTags       = count($this->tagRepo->all());
+        // $totalCategories = count($this->categoryRepo->all());
+
         $this->view('admin/dashboard', [
-            'user'        => $user,
-            'page_title'  => 'Admin Dashboard - TalentHub',
-            'totalUsers'  => $totalUsers,
-            'roleCounts'  => $roleCounts,
+            'user'            => $user,
+            'page_title'      => 'Admin Dashboard - TalentHub',
+            'totalUsers'      => $totalUsers,
+            'roleCounts'      => $roleCounts,
+            'totalTags'       => $totalTags,
+            // 'totalCategories' => $totalCategories,
         ]);
     }
 

@@ -10,6 +10,10 @@ use App\Controllers\CandidateController;
 use App\Controllers\RecruiterController;
 use App\Controllers\AdminController;
 
+
+use App\Controllers\AdminTagController;
+
+
 // Initialize middleware
 $authMiddleware = new AuthMiddleware();
 
@@ -62,6 +66,17 @@ $router->addRouter('GET', '/admin/users', [AdminController::class, 'users']);
 $router->addRouter('GET', '/admin/roles', [AdminController::class, 'roles']);
 $router->addRouter('GET', '/admin/system', [AdminController::class, 'system']);
 $router->addRouter('GET', '/admin/logs', [AdminController::class, 'logs']);
+
+
+
+// Tags CRUD
+$router->addRouter('GET',  '/admin/tags',           [AdminTagController::class, 'index']);
+$router->addRouter('GET',  '/admin/tags/create',    [AdminTagController::class, 'create']);
+$router->addRouter('POST', '/admin/tags/store',     [AdminTagController::class, 'store']);
+$router->addRouter('GET',  '/admin/tags/edit',      [AdminTagController::class, 'edit']);  
+$router->addRouter('POST', '/admin/tags/update',    [AdminTagController::class, 'update']);
+$router->addRouter('POST', '/admin/tags/destroy',   [AdminTagController::class, 'destroy']);
+
 
 // Error Routes
 $router->addRouter('GET', '/403', function() {
