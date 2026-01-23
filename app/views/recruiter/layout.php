@@ -47,10 +47,10 @@
                         <div class="flex items-center space-x-3">
                             <div class="text-sm">
                                 <p class="text-gray-500">Welcome back,</p>
-                                <p class="font-medium text-gray-900"><?= htmlspecialchars($user['email']) ?></p>
+                                <p class="font-medium text-gray-900"><?= htmlspecialchars($user['email'] ?? 'recruiter@talenthub.com') ?></p>
                             </div>
                             <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'], 0, 1)) ?></span>
+                                <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'] ?? 'recruiter', 0, 1)) ?></span>
                             </div>
                             <a href="/Talent-HUB/logout" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i> Logout
@@ -64,20 +64,6 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <?php if (isset($_SESSION['error'])): ?>
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                <?= htmlspecialchars($_SESSION['error']) ?>
-                <?php unset($_SESSION['error']); ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (isset($_SESSION['success'])): ?>
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
-                <?= htmlspecialchars($_SESSION['success']) ?>
-                <?php unset($_SESSION['success']); ?>
-            </div>
-        <?php endif; ?>
-        
         <?= $content ?? '' ?>
     </main>
 

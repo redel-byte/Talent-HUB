@@ -81,4 +81,41 @@ class Category
             'job_offers' => array_map(fn($job) => $job->toArray(), $this->jobOffers)
         ];
     }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        if ($id <= 0) {
+            throw new \InvalidArgumentException('Invalid category id');
+        }
+        $this->id = $id;
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): self
+    {
+        $name = trim($name);
+
+        if ($name === '') {
+            throw new \InvalidArgumentException('Category name cannot be empty');
+        }
+
+        if (mb_strlen($name) > 255) {
+            throw new \InvalidArgumentException('Category name is too long');
+        }
+
+        $this->name = $name;
+
+        return $this;
+    }
+
 }

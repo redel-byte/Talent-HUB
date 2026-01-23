@@ -32,14 +32,21 @@ class Router
         $uri = $this->processUri();
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-        foreach ($this->routes as $route) {
+        // Debug: Log the request
+        error_log("Router: Looking for URI: '$uri', Method: '$method'");
+        error_log("Router: Total routes registered: " . count($this->routes));
+
+        foreach ($this->routes as $index => $route) {
+            error_log("Router: Checking route $index: {$route['method']} {$route['path']}");
             if ($route['method'] === $method && $route['path'] === $uri) {
+                error_log("Router: Found matching route! Executing handler...");
                 $this->executeHandler($route['handler']);
                 return;
             }
         }
 
         // Handle 404
+        error_log("Router: No matching route found for URI: '$uri'");
         http_response_code(404);
         require_once __DIR__ . '/../views/errors/404.php';
     }

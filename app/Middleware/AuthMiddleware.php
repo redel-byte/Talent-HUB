@@ -50,9 +50,20 @@ class AuthMiddleware
             '/recruiter' => ['GET'],
             '/recruiter/dashboard' => ['GET'],
             '/recruiter/jobs' => ['GET'],
+            '/recruiter/jobs/create' => ['GET'],
+            '/recruiter/jobs/store' => ['POST'],
+            '/recruiter/jobs/edit' => ['GET'],
+            '/recruiter/jobs/update' => ['POST'],
+            '/recruiter/jobs/delete' => ['POST'],
             '/recruiter/candidates' => ['GET'],
             '/recruiter/company' => ['GET'],
-            '/recruiter/settings' => ['GET']
+            '/recruiter/company/create' => ['GET'],
+            '/recruiter/company/store' => ['POST'],
+            '/recruiter/company/update' => ['POST'],
+            '/recruiter/settings' => ['GET'],
+            '/recruiter/applications' => ['GET'],
+            '/recruiter/applications/update-status' => ['POST'],
+            '/recruiter/candidate/profile' => ['GET']
         ],
         'admin' => [
             '/admin' => ['GET'],
@@ -60,7 +71,19 @@ class AuthMiddleware
             '/admin/users' => ['GET'],
             '/admin/roles' => ['GET'],
             '/admin/system' => ['GET'],
-            '/admin/logs' => ['GET']
+            '/admin/logs' => ['GET'],
+            '/admin/tags' => ['GET'],
+            '/admin/tags/create' => ['GET'],
+            '/admin/tags/store' => ['POST'],
+            '/admin/tags/edit' => ['GET'],
+            '/admin/tags/update' => ['POST'],
+            '/admin/tags/destroy' => ['POST'],
+            '/admin/categories' => ['GET'],
+            '/admin/categories/create' => ['GET'],
+            '/admin/categories/store' => ['POST'],
+            '/admin/categories/edit' => ['GET'],
+            '/admin/categories/update' => ['POST'],
+            '/admin/categories/destroy' => ['POST']
         ]
     ];
 
@@ -70,6 +93,11 @@ class AuthMiddleware
         $uri = rtrim($uri, '/');
         if ($uri === '') $uri = '/';
 
+        // Debug: Log the request
+        error_log("AuthMiddleware: Checking URI: $uri, Method: $method");
+        error_log("AuthMiddleware: User role: " . ($_SESSION['role'] ?? 'NOT SET'));
+        error_log("AuthMiddleware: User ID: " . ($_SESSION['user_id'] ?? 'NOT SET'));
+
         // Check if route is public
         if ($this->isPublicRoute($uri, $method)) {
             return true;
@@ -77,6 +105,7 @@ class AuthMiddleware
 
         // Check if user is authenticated
         if (!$this->isAuthenticated()) {
+            error_log("AuthMiddleware: User not authenticated");
             $_SESSION['error'] = 'Please login to access this page.';
             $this->redirect('/login');
             return false;
@@ -84,12 +113,16 @@ class AuthMiddleware
 
         // Check role-based access
         $userRole = $_SESSION['role'] ?? null;
+        error_log("AuthMiddleware: Checking role access for role: $userRole");
+        
         if (!$userRole || !$this->hasRoleAccess($userRole, $uri, $method)) {
+            error_log("AuthMiddleware: Access denied for role: $userRole, URI: $uri");
             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
             $this->redirect('/403');
             return false;
         }
 
+        error_log("AuthMiddleware: Access granted");
         return true;
     }
 
@@ -113,24 +146,45 @@ class AuthMiddleware
 
     private function hasRoleAccess(string $role, string $uri, string $method): bool
     {
+        // Sync role from database if not set in session
+        if (empty($role) && isset($_SESSION['user_id'])) {
+            error_log("AuthMiddleware: Role is empty, syncing from database");
+            $userModel = new \App\Models\UserModel(\App\Middleware\Database::connection());
+            $user = $userModel->findById($_SESSION['user_id']);
+            if ($user && isset($user['role'])) {
+                $_SESSION['role'] = $user['role'];
+                $role = $user['role'];
+                error_log("AuthMiddleware: Synced role from database: $role");
+            }
+        }
+        
+        error_log("AuthMiddleware: Checking access for role: $role, URI: $uri, Method: $method");
+        
         if (!isset($this->roleRoutes[$role])) {
+            error_log("AuthMiddleware: Role $role not found in roleRoutes");
             return false;
         }
 
         $roleRoutes = $this->roleRoutes[$role];
+        error_log("AuthMiddleware: Available routes for role $role: " . implode(', ', array_keys($roleRoutes)));
         
         // Check exact route match
         if (isset($roleRoutes[$uri])) {
-            return in_array($method, $roleRoutes[$uri]);
+            $allowed = in_array($method, $roleRoutes[$uri]);
+            error_log("AuthMiddleware: Exact route match found for $uri, method $method allowed: " . ($allowed ? 'YES' : 'NO'));
+            return $allowed;
         }
 
         // Check prefix matches (for routes like /candidate/*)
         foreach ($roleRoutes as $route => $allowedMethods) {
             if ($this->isPrefixMatch($route, $uri)) {
-                return in_array($method, $allowedMethods);
+                $allowed = in_array($method, $allowedMethods);
+                error_log("AuthMiddleware: Prefix match found for $route, method $method allowed: " . ($allowed ? 'YES' : 'NO'));
+                return $allowed;
             }
         }
 
+        error_log("AuthMiddleware: No route match found for $uri");
         return false;
     }
 

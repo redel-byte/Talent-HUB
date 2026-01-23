@@ -17,9 +17,15 @@ class JobOfferRepository extends BaseRepository
     {
         $stmt = $this->pdo->prepare(
             "INSERT INTO job_offers (title, description, salary, company_id, category_id, created_at)
-             VALUES (:title, :description, :salary, :company, :category, NOW())"
+             VALUES (:title, :description, :salary, :company_id, :category_id, NOW())"
         );
-        return $stmt->execute($data);
+        return $stmt->execute([
+            ':title' => $data['title'],
+            ':description' => $data['description'],
+            ':salary' => $data['salary'],
+            ':company_id' => $data['company_id'],
+            ':category_id' => $data['category_id']
+        ]);
     }
 
     public function findByCompany(int $companyId): array
