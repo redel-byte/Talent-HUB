@@ -36,7 +36,10 @@
                         </a>
                         <a href="/Talent-HUB/admin/tags" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-list-alt mr-1"></i> Tags
-</a>
+                        </a>
+                        <a href="/Talent-HUB/admin/categories" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-list-alt mr-1"></i> Categories
+                        </a>
 
                     </div>
                     
