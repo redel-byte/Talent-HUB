@@ -9,50 +9,60 @@ namespace App\Core;
 class AuthMiddleware
 {
     private array $publicRoutes = [
-        '/' => ['GET'],
-        '/home' => ['GET'],
-        '/find-talent' => ['GET'],
-        '/find-jobs' => ['GET'],
-        '/pricing' => ['GET'],
-        '/blog' => ['GET'],
-        '/login' => ['GET', 'POST'],
-        '/register' => ['GET', 'POST'],
-        '/logout' => ['GET'],
-        '/403' => ['GET'],
-        '/404' => ['GET']
+        '/'           => ['GET'],
+        '/home'       => ['GET'],
+        '/find-talent'=> ['GET'],
+        '/find-jobs'  => ['GET'],
+        '/pricing'    => ['GET'],
+        '/blog'       => ['GET'],
+        '/login'      => ['GET', 'POST'],
+        '/register'   => ['GET', 'POST'],
+        '/logout'     => ['GET'],
+        '/403'        => ['GET'],
+        '/404'        => ['GET'],
     ];
 
     private array $roleRoutes = [
         'candidate' => [
-            '/candidate' => ['GET'],
-            '/candidate/dashboard' => ['GET'],
-            '/candidate/profile' => ['GET'],
+            '/candidate'              => ['GET'],
+            '/candidate/dashboard'    => ['GET'],
+            '/candidate/profile'      => ['GET'],
             '/candidate/applications' => ['GET'],
-            '/candidate/settings' => ['GET']
+            '/candidate/settings'     => ['GET'],
         ],
         'recruiter' => [
-            '/recruiter' => ['GET'],
-            '/recruiter/dashboard' => ['GET'],
-            '/recruiter/jobs' => ['GET'],
-            '/recruiter/candidates' => ['GET'],
-            '/recruiter/company' => ['GET'],
-            '/recruiter/settings' => ['GET']
+            '/recruiter'             => ['GET'],
+            '/recruiter/dashboard'   => ['GET'],
+            '/recruiter/jobs'        => ['GET'],
+            '/recruiter/candidates'  => ['GET'],
+            '/recruiter/company'     => ['GET'],
+            '/recruiter/settings'    => ['GET'],
         ],
         'admin' => [
-            '/admin' => ['GET'],
+            '/admin'           => ['GET'],
             '/admin/dashboard' => ['GET'],
-            '/admin/users' => ['GET'],
-            '/admin/roles' => ['GET'],
-            '/admin/system' => ['GET'],
-            '/admin/logs' => ['GET']
-        ]
+            '/admin/users'     => ['GET'],
+            '/admin/roles'     => ['GET'],
+            '/admin/system'    => ['GET'],
+            '/admin/logs'      => ['GET'],
+
+            // Tags CRUD routes
+            '/admin/tags'         => ['GET'],
+            '/admin/tags/create'  => ['GET'],
+            '/admin/tags/store'   => ['POST'],
+            '/admin/tags/edit'    => ['GET'],
+            '/admin/tags/update'  => ['POST'],
+            '/admin/tags/destroy' => ['POST'],
+        ],
     ];
 
     public function handle(string $uri, string $method): bool
     {
         // Normalize URI
         $uri = rtrim($uri, '/');
-        if ($uri === '') $uri = '/';
+        if ($uri === '') {
+            $uri = '/';
+        }
 
         // Check if route is public
         if ($this->isPublicRoute($uri, $method)) {
@@ -83,7 +93,7 @@ class AuthMiddleware
             return false;
         }
 
-        return in_array($method, $this->publicRoutes[$uri]);
+        return in_array($method, $this->publicRoutes[$uri], true);
     }
 
     private function isAuthenticated(): bool
@@ -102,16 +112,16 @@ class AuthMiddleware
         }
 
         $roleRoutes = $this->roleRoutes[$role];
-        
+
         // Check exact route match
         if (isset($roleRoutes[$uri])) {
-            return in_array($method, $roleRoutes[$uri]);
+            return in_array($method, $roleRoutes[$uri], true);
         }
 
         // Check prefix matches (for routes like /candidate/*)
         foreach ($roleRoutes as $route => $allowedMethods) {
             if ($this->isPrefixMatch($route, $uri)) {
-                return in_array($method, $allowedMethods);
+                return in_array($method, $allowedMethods, true);
             }
         }
 
@@ -133,7 +143,7 @@ class AuthMiddleware
     {
         $baseUrl = '/Talent-HUB';
         $fullUrl = $baseUrl . $url;
-        header("Location: {$fullUrl}");
+        header('Location: ' . $fullUrl);
         exit();
     }
 
