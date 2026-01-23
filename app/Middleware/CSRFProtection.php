@@ -1,20 +1,14 @@
 <?php
 
-namespace App\Core;
+namespace App\Middleware;
 
-/**
- * CSRF Protection Class
- * Provides Cross-Site Request Forgery protection tokens
- */
 class CSRFProtection
 {
     private static string $tokenName = 'csrf_token';
     private static int $tokenLength = 32;
 
-    /**
-     * Generate a new CSRF token
-     */
-    public static function generateToken(): string
+  //generate new token;
+   public static function generateToken(): string
     {
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -26,9 +20,7 @@ class CSRFProtection
         return $token;
     }
 
-    /**
-     * Get existing token or generate new one
-     */
+    //get existing token or generateone;
     public static function getToken(): string
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -42,9 +34,7 @@ class CSRFProtection
         return $_SESSION[self::$tokenName];
     }
 
-    /**
-     * Validate CSRF token
-     */
+    //Validate token;
     public static function validateToken(string $token): bool
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -58,18 +48,15 @@ class CSRFProtection
         return hash_equals($_SESSION[self::$tokenName], $token);
     }
 
-    /**
-     * Get HTML input field for CSRF token
-     */
+     // Get HTML input field for CSRF token
+
     public static function getHiddenInput(): string
     {
         $token = self::getToken();
         return '<input type="hidden" name="' . self::$tokenName . '" value="' . htmlspecialchars($token) . '">';
     }
 
-    /**
-     * Clear the CSRF token
-     */
+      // Clear the CSRF token
     public static function clearToken(): void
     {
         if (session_status() == PHP_SESSION_NONE) {
@@ -79,9 +66,7 @@ class CSRFProtection
         unset($_SESSION[self::$tokenName]);
     }
 
-    /**
-     * Validate token from POST request
-     */
+     // Validate token from POST request
     public static function validateRequest(): bool
     {
         $token = $_POST[self::$tokenName] ?? $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';

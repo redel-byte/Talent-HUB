@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../admin/layout.php'; ?>
+<?php ob_start(); ?>
 
 <div class="bg-white shadow rounded-lg p-6">
     <div class="flex justify-between items-center mb-6">
@@ -138,3 +138,8 @@
         </nav>
     </div>
 </div>
+
+<?php
+$content = ob_get_clean();
+$page_title = $page_title ?? 'System Logs - TalentHub';
+require __DIR__ . '/layout.php';

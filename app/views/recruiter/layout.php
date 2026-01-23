@@ -22,8 +22,11 @@
                 <div class="flex items-center space-x-4">
                     <!-- Recruiter Navigation -->
                     <div class="flex items-center space-x-4">
+                        <a href="/Talent-HUB/" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-home mr-1"></i> Home
+                        </a>
                         <a href="/Talent-HUB/recruiter/dashboard" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-home mr-1"></i> Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
                         </a>
                         <a href="/Talent-HUB/recruiter/jobs" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-briefcase mr-1"></i> Job Postings
@@ -44,10 +47,10 @@
                         <div class="flex items-center space-x-3">
                             <div class="text-sm">
                                 <p class="text-gray-500">Welcome back,</p>
-                                <p class="font-medium text-gray-900"><?= htmlspecialchars($user['email']) ?></p>
+                                <p class="font-medium text-gray-900"><?= htmlspecialchars($user['email'] ?? 'recruiter@talenthub.com') ?></p>
                             </div>
                             <div class="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'], 0, 1)) ?></span>
+                                <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'] ?? 'recruiter', 0, 1)) ?></span>
                             </div>
                             <a href="/Talent-HUB/logout" class="text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i> Logout

@@ -1,4 +1,4 @@
-<?php require_once __DIR__ . '/../admin/layout.php'; ?>
+<?php ob_start(); ?>
 
 <div class="bg-white shadow rounded-lg p-6">
     <h2 class="text-2xl font-bold text-gray-900 mb-6">System Settings</h2>
@@ -164,3 +164,8 @@
         </button>
     </div>
 </div>
+
+<?php
+$content = ob_get_clean();
+$page_title = $page_title ?? 'System Settings - TalentHub';
+require __DIR__ . '/layout.php';

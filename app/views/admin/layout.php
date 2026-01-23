@@ -34,9 +34,13 @@
                         <a href="/Talent-HUB/admin/system" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-cogs mr-1"></i> System
                         </a>
-                        <a href="/Talent-HUB/admin/logs" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-list-alt mr-1"></i> Logs
+                        <a href="/Talent-HUB/admin/tags" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-list-alt mr-1"></i> Tags
                         </a>
+                        <a href="/Talent-HUB/admin/categories" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-list-alt mr-1"></i> Categories
+                        </a>
+
                     </div>
                     
                     <!-- User Menu -->
@@ -44,10 +48,10 @@
                         <div class="flex items-center space-x-3">
                             <div class="text-sm text-white">
                                 <p class="text-red-200">Administrator</p>
-                                <p class="font-medium"><?= htmlspecialchars($user['email']) ?></p>
+                                <p class="font-medium"><?= htmlspecialchars($user['email'] ?? 'admin@talenthub.com') ?></p>
                             </div>
                             <div class="w-8 h-8 bg-red-800 rounded-full flex items-center justify-center">
-                                <span class="text-white text-sm font-medium">A</span>
+                                <span class="text-white text-sm font-medium"><?= strtoupper(substr($user['email'] ?? 'admin', 0, 1)) ?></span>
                             </div>
                             <a href="/Talent-HUB/logout" class="text-white hover:text-red-200 px-3 py-2 rounded-md text-sm font-medium">
                                 <i class="fas fa-sign-out-alt mr-1"></i> Logout

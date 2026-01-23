@@ -1,10 +1,8 @@
 <?php
 
-namespace App\Core;
+namespace App\Middleware;
 use PDO;
-use Pdo\Mysql;
 use Dotenv\Dotenv;
-Dotenv::createImmutable(__DIR__ . '/../../')->load();
 
 class Database
 {
@@ -13,6 +11,12 @@ class Database
     public static function connection(): \PDO
     {
         if (self::$conn === null) {
+            // Load environment variables
+            $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
+            if (file_exists(__DIR__ . '/../../.env')) {
+                $dotenv->load();
+            }
+            
             $dsn = "mysql:host={$_ENV['HOST']};port={$_ENV['PORT']};dbname={$_ENV['DBNAME']};charset=utf8mb4";
             
             try {
@@ -24,9 +28,7 @@ class Database
                       PDO::ATTR_ERRMODE                  => PDO::ERRMODE_EXCEPTION,
                       PDO::ATTR_DEFAULT_FETCH_MODE       => PDO::FETCH_ASSOC,
                       PDO::ATTR_EMULATE_PREPARES         => false,
-                      Mysql::ATTR_SSL_CA                 => $_ENV['SSLCA'],
-                      Mysql::ATTR_SSL_VERIFY_SERVER_CERT => false,
-          ]);
+                    ]);
             } catch (\PDOException $e) {
                 die("[!] Connection Failed\n" . $e->getMessage());
             }

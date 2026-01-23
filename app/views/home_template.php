@@ -1,3 +1,4 @@
+<?php ob_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,6 +14,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <base href="/Talent-HUB/">
+    <!-- Main JavaScript -->
+    <script src="/Talent-HUB/app/views/assets/main.js" defer></script>
     <style>
         * {
             font-family: 'Poppins', sans-serif;
@@ -78,31 +81,7 @@
     </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center">
-                <div class="flex items-center">
-                    <h1 class="text-2xl font-bold text-purple-600">TalentHub</h1>
-                </div>
-                
-                <div class="hidden md:flex space-x-8">
-                    <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
-                    <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
-                    <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
-                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
-                    <a href="/Talent-HUB/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
-                    <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
-                </div>
-                
-                <div class="flex space-x-4">
-                    <a href="/Talent-HUB/login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
-                    <a href="/Talent-HUB/register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
-                </div>
-            </div>
-        </div>
-    </nav>
-
+    <?php require_once __DIR__ . '/components/navigation.php'; ?>
     <!-- Hero Section -->
     <section class="gradient-bg text-white section-padding">
         <div class="container mx-auto px-6">
@@ -401,3 +380,5 @@
     </footer>
 </body>
 </html>
+<?php $content = ob_get_clean(); ?>
+<?php require_once __DIR__ . '/layouts/base.php'; ?>

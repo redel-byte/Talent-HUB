@@ -111,7 +111,7 @@
                     <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
                     <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
                     <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
-                    <a href="#" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
+                    <a href="/Talent-HUB/how-it-works" class="text-gray-700 hover:text-purple-600 font-medium transition">How It Works</a>
                     <a href="/Talent-HUB/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
                     <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
                 </div>
@@ -208,7 +208,7 @@
                             $success = $success ?? null;
                             $show_signup = $show_signup ?? false;
                             ?>
-                            <form id="loginFormElement" action="/Talent-HUB/login" method="post">
+                            <form id="loginFormElement" action="Talent-HUB/login" method="post">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
                                 
@@ -292,10 +292,11 @@
                                 <p class="text-gray-600 mt-2">Create your account in less than 2 minutes</p>
                             </div>
                             
-                            <form id="signupFormElement" action="/Talent-HUB/register" method="post">
+                            <form id="signupFormElement" action="Talent-HUB/register" method="post">
                                 <!-- CSRF Token -->
                                 <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token ?? '') ?>">
-                                
+                                                      
+                           
                                 <div class="space-y-6">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
@@ -328,7 +329,15 @@
                                             <input name="email" type="email" id="signupEmail" class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition" placeholder="you@example.com" required>
                                         </div>
                                     </div>
-                                    
+                                    <div>
+                                        <label for="phoneNumber" class="block text-gray-700 font-medium mb-2">Phone Number</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                 <i class="fas fa-mobile-alt text-gray-400"></i>                                           </div>
+                                            <input name="phoneNumber" type="tel" id="phoneNumber" class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition" placeholder="+212645884913" required>
+                                        </div>
+                                    </div>
+
                                     <div>
                                         <label for="userType" class="block text-gray-700 font-medium mb-2">I am a</label>
                                         <div class="grid grid-cols-2 gap-4">
@@ -348,7 +357,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    
+                            </div>
                                     <div>
                                         <label for="signupPassword" class="block text-gray-700 font-medium mb-2">Password</label>
                                         <div class="relative">
@@ -383,6 +392,13 @@
                                         </label>
                                     </div>
                                     
+                                    <div class="mt-4">
+                                    <?php if ($error): ?>
+                                    <div class="bg-red-100 text-red-700 p-3 rounded mb-4"><?php echo htmlspecialchars($error); ?></div>
+                                    <?php endif; ?>
+                                    <?php if ($success): ?>
+                                    <div class="bg-green-100 text-green-700 p-3 rounded mb-4"><?php echo htmlspecialchars($success); ?></div>
+                                    <?php endif; ?>
                                     <button type="submit" class="btn w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg transition duration-300 pulse">
                                         <i class="fas fa-user-plus mr-2"></i> Create Account
                                     </button>
