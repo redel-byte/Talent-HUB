@@ -53,6 +53,15 @@ class AuthMiddleware
             '/admin/tags/edit'    => ['GET'],
             '/admin/tags/update'  => ['POST'],
             '/admin/tags/destroy' => ['POST'],
+
+            // Categories
+            '/admin/categories'         => ['GET'],
+            '/admin/categories/create'  => ['GET'],
+            '/admin/categories/store'   => ['POST'],
+            '/admin/categories/edit'    => ['GET'],
+            '/admin/categories/update'  => ['POST'],
+            '/admin/categories/destroy' => ['POST'],
+
         ],
     ];
 
