@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use PDO;
+use Exception;
 
 class CandidateRepository extends BaseRepository
 {
@@ -17,7 +18,7 @@ class CandidateRepository extends BaseRepository
     {
         $sql = "SELECT u.*, 
                        COUNT(a.id) as application_count,
-                       MAX(a.applied_at) as last_application_date
+                       MAX(a.created_at) as last_application_date
                 FROM users u
                 LEFT JOIN applications a ON u.id = a.candidate_id
                 WHERE u.role_id = (SELECT id FROM roles WHERE name = 'candidate' LIMIT 1)
@@ -67,7 +68,7 @@ class CandidateRepository extends BaseRepository
                     COUNT(a.id) as total_applications,
                     COUNT(CASE WHEN a.status = 'accepted' THEN 1 END) as accepted_applications,
                     COUNT(CASE WHEN a.status = 'pending' THEN 1 END) as pending_applications,
-                    MAX(a.applied_at) as last_application_date
+                    MAX(a.created_at) as last_application_date
              FROM users u
              LEFT JOIN roles r ON u.role_id = r.id
              LEFT JOIN applications a ON u.id = a.candidate_id
@@ -82,10 +83,11 @@ class CandidateRepository extends BaseRepository
     public function getCandidateApplications(int $candidateId, ?array $status = null): array
     {
         $sql = "SELECT a.*, jo.title, jo.salary, jo.salary_min, jo.salary_max,
-                       c.name as company_name
+                       '' as location,
+                       u.fullname as recruiter_name
                 FROM applications a
                 INNER JOIN job_offers jo ON a.job_offer_id = jo.id
-                LEFT JOIN company c ON jo.company_id = c.id
+                LEFT JOIN users u ON jo.company_id = u.id
                 WHERE a.candidate_id = :candidate_id";
         
         $params = ['candidate_id' => $candidateId];
@@ -100,7 +102,7 @@ class CandidateRepository extends BaseRepository
             $sql .= " AND a.status IN (" . implode(',', $placeholders) . ")";
         }
         
-        $sql .= " ORDER BY a.id DESC"; // Using id as fallback since applied_at doesn't exist
+        $sql .= " ORDER BY a.created_at DESC";
         
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
@@ -110,17 +112,25 @@ class CandidateRepository extends BaseRepository
     public function getCandidateSkills(int $candidateId): array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT DISTINCT t.*, COUNT(jot.job_offer_id) as skill_frequency
+            "SELECT DISTINCT t.id, t.name, COUNT(jot.job_offer_id) as skill_frequency
              FROM tags t
              INNER JOIN job_offer_tags jot ON t.id = jot.tag_id
              INNER JOIN job_offers jo ON jot.job_offer_id = jo.id
              INNER JOIN applications a ON jo.id = a.job_offer_id
              WHERE a.candidate_id = :candidate_id
-             GROUP BY t.id, t.name, t.color, t.created_at
+             GROUP BY t.id, t.name
              ORDER BY skill_frequency DESC, t.name ASC"
         );
         $stmt->execute(['candidate_id' => $candidateId]);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $skills = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Add default color for display purposes
+        foreach ($skills as &$skill) {
+            $skill['color'] = '#007bff'; // Default blue color
+            $skill['created_at'] = null; // Add missing field
+        }
+        
+        return $skills;
     }
 
     public function getCandidateStats(int $candidateId): array
@@ -178,7 +188,7 @@ class CandidateRepository extends BaseRepository
              INNER JOIN applications a ON u.id = a.candidate_id
              WHERE u.role_id = (SELECT id FROM roles WHERE name = 'candidate' LIMIT 1)
                AND u.archived_at IS NULL
-               AND a.applied_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
+             AND a.created_at >= DATE_SUB(NOW(), INTERVAL :days DAY)
              GROUP BY u.id
              HAVING recent_applications > 0
              ORDER BY recent_applications DESC, u.fullname ASC
@@ -205,6 +215,142 @@ class CandidateRepository extends BaseRepository
              LIMIT :limit"
         );
         $stmt->execute(['skill_name' => $skillName, 'limit' => $limit]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // New methods for button functionality
+    public function getApplicationDetails(int $candidateId, int $applicationId): ?array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT a.*, jo.title, jo.description, jo.salary, jo.salary_min, jo.salary_max,
+                   jo.location, jo.type, jo.experience_level, jo.description as job_description,
+                   u.fullname as recruiter_name, u.email as recruiter_email,
+                   c.name as company_name
+             FROM applications a
+             INNER JOIN job_offers jo ON a.job_offer_id = jo.id
+             LEFT JOIN users u ON jo.company_id = u.id
+             LEFT JOIN companies c ON jo.company_id = c.id
+             WHERE a.candidate_id = :candidate_id AND a.id = :application_id"
+        );
+        $stmt->execute(['candidate_id' => $candidateId, 'application_id' => $applicationId]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result ?: null;
+    }
+
+    public function withdrawApplication(int $candidateId, int $applicationId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE applications 
+             SET status = 'withdrawn', updated_at = NOW() 
+             WHERE candidate_id = :candidate_id AND id = :application_id 
+             AND status IN ('pending', 'reviewed')"
+        );
+        return $stmt->execute(['candidate_id' => $candidateId, 'application_id' => $applicationId]);
+    }
+
+    public function acceptOffer(int $candidateId, int $applicationId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE applications 
+             SET status = 'accepted_by_candidate', updated_at = NOW() 
+             WHERE candidate_id = :candidate_id AND id = :application_id 
+             AND status = 'accepted'"
+        );
+        return $stmt->execute(['candidate_id' => $candidateId, 'application_id' => $applicationId]);
+    }
+
+    public function reapplyJob(int $candidateId, int $applicationId): bool
+    {
+        $this->pdo->beginTransaction();
+        try {
+            // Get the job offer ID from the original application
+            $stmt = $this->pdo->prepare(
+                "SELECT job_offer_id FROM applications 
+                 WHERE candidate_id = :candidate_id AND id = :application_id"
+            );
+            $stmt->execute(['candidate_id' => $candidateId, 'application_id' => $applicationId]);
+            $originalApplication = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$originalApplication) {
+                $this->pdo->rollBack();
+                return false;
+            }
+            
+            // Create new application
+            $stmt = $this->pdo->prepare(
+                "INSERT INTO applications (candidate_id, job_offer_id, status, created_at, updated_at) 
+                 VALUES (:candidate_id, :job_offer_id, 'pending', NOW(), NOW())"
+            );
+            $result = $stmt->execute([
+                'candidate_id' => $candidateId,
+                'job_offer_id' => $originalApplication['job_offer_id']
+            ]);
+            
+            if ($result) {
+                $this->pdo->commit();
+                return true;
+            } else {
+                $this->pdo->rollBack();
+                return false;
+            }
+        } catch (Exception $e) {
+            $this->pdo->rollBack();
+            return false;
+        }
+    }
+
+    public function saveJob(int $candidateId, int $jobId): bool
+    {
+        // Check if already saved
+        $stmt = $this->pdo->prepare(
+            "SELECT id FROM saved_jobs 
+             WHERE candidate_id = :candidate_id AND job_offer_id = :job_id"
+        );
+        $stmt->execute(['candidate_id' => $candidateId, 'job_id' => $jobId]);
+        
+        if ($stmt->fetch()) {
+            return true; // Already saved
+        }
+        
+        // Save the job
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO saved_jobs (candidate_id, job_offer_id, created_at) 
+             VALUES (:candidate_id, :job_id, NOW())"
+        );
+        return $stmt->execute(['candidate_id' => $candidateId, 'job_id' => $jobId]);
+    }
+
+    public function unsaveJob(int $candidateId, int $jobId): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "DELETE FROM saved_jobs 
+             WHERE candidate_id = :candidate_id AND job_offer_id = :job_id"
+        );
+        return $stmt->execute(['candidate_id' => $candidateId, 'job_id' => $jobId]);
+    }
+
+    public function getRecommendedJobs(int $candidateId, int $limit = 5): array
+    {
+        // Get jobs that match the candidate's skills and experience level
+        $stmt = $this->pdo->prepare(
+            "SELECT DISTINCT jo.*, u.fullname as recruiter_name, u.email as recruiter_email,
+                   co.name as company_name
+             FROM job_offers jo
+             LEFT JOIN users u ON jo.company_id = u.id
+             LEFT JOIN companies co ON jo.company_id = co.id
+             WHERE jo.id NOT IN (
+                 SELECT job_offer_id FROM applications WHERE candidate_id = :candidate_id_app
+             )
+             AND jo.id NOT IN (
+                 SELECT job_offer_id FROM saved_jobs WHERE candidate_id = :candidate_id_saved
+             )
+             ORDER BY jo.created_at DESC
+             LIMIT :limit"
+        );
+        $stmt->bindValue('candidate_id_app', $candidateId, PDO::PARAM_INT);
+        $stmt->bindValue('candidate_id_saved', $candidateId, PDO::PARAM_INT);
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }

@@ -43,4 +43,62 @@ class JobOfferRepository extends BaseRepository
         );
         return $stmt->execute(['id' => $id]);
     }
+
+    public function getAllActiveJobs(): array
+    {
+        $stmt = $this->pdo->prepare(
+            "SELECT jo.*, c.name as company_name, c.email as company_email, cat.name as category_name
+             FROM job_offers jo
+             LEFT JOIN company c ON jo.company_id = c.id
+             LEFT JOIN categories cat ON jo.category_id = cat.id
+             WHERE jo.archived_at IS NULL
+             ORDER BY jo.created_at DESC"
+        );
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function searchJobs(array $filters = []): array
+    {
+        $sql = "SELECT jo.*, c.name as company_name, c.email as company_email, cat.name as category_name
+                FROM job_offers jo
+                LEFT JOIN company c ON jo.company_id = c.id
+                LEFT JOIN categories cat ON jo.category_id = cat.id
+                WHERE jo.archived_at IS NULL";
+        
+        $params = [];
+        $conditions = [];
+        
+        if (!empty($filters['search'])) {
+            $conditions[] = "(jo.title LIKE ? OR jo.description LIKE ?)";
+            $searchParam = '%' . $filters['search'] . '%';
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+        }
+        
+        if (!empty($filters['category']) && $filters['category'] !== '') {
+            $conditions[] = "cat.name = ?";
+            $params[] = $filters['category'];
+        }
+        
+        if (!empty($filters['min_salary']) && is_numeric($filters['min_salary'])) {
+            $conditions[] = "jo.salary >= ?";
+            $params[] = (float)$filters['min_salary'];
+        }
+        
+        if (!empty($conditions)) {
+            $sql .= " AND " . implode(" AND ", $conditions);
+        }
+        
+        $sql .= " ORDER BY jo.created_at DESC";
+        
+        // Debug logging
+        error_log("SQL: " . $sql);
+        error_log("Params: " . json_encode($params));
+        error_log("Filters received: " . json_encode($filters));
+        
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

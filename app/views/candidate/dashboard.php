@@ -33,7 +33,7 @@ function getStatusColor(string $status): string
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
-                            <dd class="text-lg font-medium text-gray-900"><?= $stats['total_applications'] ?? 0 ?></dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= isset($stats['total_applications']) ? (int)$stats['total_applications'] : 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -49,7 +49,7 @@ function getStatusColor(string $status): string
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Profile Views</dt>
-                            <dd class="text-lg font-medium text-gray-900"><?= $profile['application_count'] ?? 0 ?></dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= isset($profile['total_applications']) ? (int)$profile['total_applications'] : 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -65,7 +65,7 @@ function getStatusColor(string $status): string
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Pending Applications</dt>
-                            <dd class="text-lg font-medium text-gray-900"><?= $stats['pending_count'] ?? 0 ?></dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= isset($stats['pending_count']) ? (int)$stats['pending_count'] : 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -81,7 +81,7 @@ function getStatusColor(string $status): string
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Accepted Applications</dt>
-                            <dd class="text-lg font-medium text-gray-900"><?= $stats['accepted_count'] ?? 0 ?></dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= isset($stats['accepted_count']) ? (int)$stats['accepted_count'] : 0 ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -105,7 +105,7 @@ function getStatusColor(string $status): string
                                     </div>
                                     <div>
                                         <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($application['title']) ?></p>
-                                        <p class="text-sm text-gray-500"><?= htmlspecialchars($application['company_name'] ?? 'Unknown Company') ?> • Applied <?= isset($application['applied_at']) ? date('M j, Y', strtotime($application['applied_at'])) : 'Recently' ?></p>
+                                        <p class="text-sm text-gray-500"><?= htmlspecialchars($application['recruiter_name'] ?? 'Unknown Recruiter') ?> • Applied <?= isset($application['applied_at']) ? date('M j, Y', strtotime($application['applied_at'])) : 'Recently' ?></p>
                                     </div>
                                 </div>
                                 <span class="px-2 py-1 text-xs font-medium bg-<?= getStatusColor($application['status']) ?>-100 text-<?= getStatusColor($application['status']) ?>-800 rounded-full">
@@ -135,48 +135,65 @@ function getStatusColor(string $status): string
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recommended Jobs</h3>
                 <div class="space-y-3">
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">React Developer</h4>
-                                <p class="text-sm text-gray-500">Innovation Labs • Remote</p>
-                                <p class="text-xs text-gray-400 mt-1">Posted 3 days ago • $80k-$120k</p>
+                    <?php if (!empty($recommendedJobs)): ?>
+                        <?php foreach ($recommendedJobs as $job): ?>
+                            <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900"><?= htmlspecialchars($job['title']) ?></h4>
+                                        <p class="text-sm text-gray-500"><?= htmlspecialchars($job['company_name'] ?? 'Innovation Labs') ?> • <?= htmlspecialchars($job['location'] ?? 'Remote') ?></p>
+                                        <p class="text-xs text-gray-400 mt-1">Posted <?= isset($job['created_at']) ? date('M j, Y', strtotime($job['created_at'])) : 'Recently' ?> • $<?= number_format($job['salary_min'] ?? $job['salary'] ?? 0) ?><?= $job['salary_max'] ? ' - $' . number_format($job['salary_max']) : '' ?></p>
+                                    </div>
+                                    <button class="job-bookmark text-blue-600 hover:text-blue-800" data-job-id="<?= $job['id'] ?>">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                </div>
                             </div>
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">PHP Backend Developer</h4>
-                                <p class="text-sm text-gray-500">Web Solutions Inc • New York</p>
-                                <p class="text-xs text-gray-400 mt-1">Posted 1 week ago • $70k-$100k</p>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <!-- Fallback to hardcoded jobs if no database jobs -->
+                        <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">React Developer</h4>
+                                    <p class="text-sm text-gray-500">Innovation Labs • Remote</p>
+                                    <p class="text-xs text-gray-400 mt-1">Posted 3 days ago • $80k-$120k</p>
+                                </div>
+                                <button class="job-bookmark text-blue-600 hover:text-blue-800" data-job-id="1">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
                             </div>
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
                         </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">DevOps Engineer</h4>
-                                <p class="text-sm text-gray-500">CloudTech • San Francisco</p>
-                                <p class="text-xs text-gray-400 mt-1">Posted 2 weeks ago • $90k-$130k</p>
+                        
+                        <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">PHP Backend Developer</h4>
+                                    <p class="text-sm text-gray-500">Web Solutions Inc • New York</p>
+                                    <p class="text-xs text-gray-400 mt-1">Posted 1 week ago • $70k-$100k</p>
+                                </div>
+                                <button class="job-bookmark text-blue-600 hover:text-blue-800" data-job-id="2">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
                             </div>
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
                         </div>
-                    </div>
-                </div>
+                        
+                        <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">DevOps Engineer</h4>
+                                    <p class="text-sm text-gray-500">CloudTech • San Francisco</p>
+                                    <p class="text-xs text-gray-400 mt-1">Posted 2 weeks ago • $90k-$130k</p>
+                                </div>
+                                <button class="job-bookmark text-blue-600 hover:text-blue-800" data-job-id="3">
+                                    <i class="fas fa-bookmark"></i>
+                                </button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 
                 <div class="mt-4">
-                    <button class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                    <button onclick="window.location.href='/Talent-HUB/find-jobs'" class="text-sm font-medium text-blue-600 hover:text-blue-500">
                         Browse more jobs <i class="fas fa-arrow-right ml-1"></i>
                     </button>
                 </div>

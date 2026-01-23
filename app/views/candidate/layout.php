@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="/Talent-HUB/app/views/assets/candidate.js" defer></script>
+    <script src="/Talent-HUB/app/views/assets/enhancements.js" defer></script>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
@@ -23,8 +24,14 @@
                 <div class="flex items-center space-x-4">
                     <!-- Candidate Navigation -->
                     <div class="flex items-center space-x-4">
+                        <a href="/Talent-HUB/" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-home mr-1"></i> Home
+                        </a>
                         <a href="/Talent-HUB/candidate/dashboard" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-home mr-1"></i> Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                        </a>
+                        <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-search mr-1"></i> Find Jobs
                         </a>
                         <a href="/Talent-HUB/candidate/applications" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-file-alt mr-1"></i> Applications
@@ -58,7 +65,21 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <main id="main-content" class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <?= htmlspecialchars($_SESSION['error']) ?>
+                <?php unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <?= htmlspecialchars($_SESSION['success']) ?>
+                <?php unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+        
         <?= $content ?? '' ?>
     </main>
 

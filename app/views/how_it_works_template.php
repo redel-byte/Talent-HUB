@@ -75,17 +75,17 @@
                 </div>
                 
                 <div class="hidden md:flex space-x-8">
-                    <a href="/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
-                    <a href="/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
-                    <a href="/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
-                    <a href="/how-it-works" class="text-purple-600 border-b-2 border-purple-600 font-medium transition">How It Works</a>
-                    <a href="/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
-                    <a href="/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
+                    <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
+                    <a href="/Talent-HUB/find-talent" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Talent</a>
+                    <a href="/Talent-HUB/find-jobs" class="text-gray-700 hover:text-purple-600 font-medium transition">Find Jobs</a>
+                    <a href="/Talent-HUB/how-it-works" class="text-purple-600 border-b-2 border-purple-600 font-medium transition">How It Works</a>
+                    <a href="/Talent-HUB/pricing" class="text-gray-700 hover:text-purple-600 font-medium transition">Pricing</a>
+                    <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
                 </div>
                 
                 <div class="flex space-x-4">
-                    <a href="/login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
-                    <a href="/register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
+                    <a href="/Talent-HUB/login" class="text-purple-600 border border-purple-600 px-4 py-2 rounded-lg hover:bg-purple-50 transition">Log In</a>
+                    <a href="/Talent-HUB/register" class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition">Sign Up</a>
                 </div>
             </div>
         </div>
@@ -101,7 +101,7 @@
                 Connecting talent with opportunity has never been easier. Discover our simple yet powerful platform designed to help you find your perfect match.
             </p>
             <div class="flex justify-center space-x-4 fade-in">
-                <a href="/register" class="bg-white text-purple-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition pulse">
+                <a href="/Talent-HUB/register" class="bg-white text-purple-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition pulse">
                     Get Started Now
                 </a>
                 <a href="#process" class="border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-purple-600 transition">
@@ -355,10 +355,10 @@
                 Join thousands of professionals and companies who have already found success on TalentHub.
             </p>
             <div class="flex justify-center space-x-4">
-                <a href="/register" class="bg-white text-purple-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition pulse">
+                <a href="/Talent-HUB/register" class="bg-white text-purple-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition pulse">
                     Sign Up Free
                 </a>
-                <a href="/pricing" class="border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-purple-600 transition">
+                <a href="/Talent-HUB/pricing" class="border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-purple-600 transition">
                     View Pricing
                 </a>
             </div>
@@ -376,24 +376,24 @@
                 <div>
                     <h4 class="font-bold mb-4">For Job Seekers</h4>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="/find-jobs" class="hover:text-white transition">Browse Jobs</a></li>
-                        <li><a href="/candidate/dashboard" class="hover:text-white transition">Dashboard</a></li>
+                        <li><a href="/Talent-HUB/find-jobs" class="hover:text-white transition">Browse Jobs</a></li>
+                        <li><a href="/Talent-HUB/candidate/dashboard" class="hover:text-white transition">Dashboard</a></li>
                         <li><a href="#" class="hover:text-white transition">Career Advice</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">For Employers</h4>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="/find-talent" class="hover:text-white transition">Find Talent</a></li>
-                        <li><a href="/recruiter/dashboard" class="hover:text-white transition">Post Jobs</a></li>
-                        <li><a href="/pricing" class="hover:text-white transition">Pricing</a></li>
+                        <li><a href="/Talent-HUB/find-talent" class="hover:text-white transition">Find Talent</a></li>
+                        <li><a href="/Talent-HUB/recruiter/dashboard" class="hover:text-white transition">Post Jobs</a></li>
+                        <li><a href="/Talent-HUB/pricing" class="hover:text-white transition">Pricing</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="font-bold mb-4">Company</h4>
                     <ul class="space-y-2 text-gray-400">
-                        <li><a href="/how-it-works" class="hover:text-white transition">How It Works</a></li>
-                        <li><a href="/blog" class="hover:text-white transition">Blog</a></li>
+                        <li><a href="/Talent-HUB/how-it-works" class="hover:text-white transition">How It Works</a></li>
+                        <li><a href="/Talent-HUB/blog" class="hover:text-white transition">Blog</a></li>
                         <li><a href="#" class="hover:text-white transition">Contact Us</a></li>
                     </ul>
                 </div>

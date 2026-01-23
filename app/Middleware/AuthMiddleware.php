@@ -11,9 +11,17 @@ class AuthMiddleware
         '/find-jobs' => ['GET'],
         '/pricing' => ['GET'],
         '/blog' => ['GET'],
+        '/how-it-works' => ['GET'],
+        '/about' => ['GET'],
+        '/contact' => ['GET'],
+        '/privacy' => ['GET'],
+        '/terms' => ['GET'],
         '/login' => ['GET', 'POST'],
         '/register' => ['GET', 'POST'],
+        '/register/candidate' => ['GET', 'POST'],
+        '/register/recruiter' => ['GET', 'POST'],
         '/logout' => ['GET'],
+        '/clear-session' => ['GET'],
         '/403' => ['GET'],
         '/404' => ['GET']
     ];
@@ -22,9 +30,21 @@ class AuthMiddleware
         'candidate' => [
             '/candidate' => ['GET'],
             '/candidate/dashboard' => ['GET'],
-            '/candidate/profile' => ['GET'],
+            '/candidate/profile' => ['GET', 'POST'],
+            '/candidate/profile/update' => ['POST'],
             '/candidate/applications' => ['GET'],
-            '/candidate/settings' => ['GET']
+            '/candidate/settings' => ['GET'],
+            '/api/candidate' => ['GET', 'POST'],
+            '/api/candidate/application' => ['GET', 'POST'],
+            '/api/candidate/application/details' => ['GET'],
+            '/api/candidate/application/withdraw' => ['POST'],
+            '/api/candidate/application/accept' => ['POST'],
+            '/api/candidate/application/reapply' => ['POST'],
+            '/api/candidate/job' => ['GET', 'POST'],
+            '/api/candidate/job/save' => ['POST'],
+            '/api/candidate/job/unsave' => ['POST'],
+            '/api/candidate/resume' => ['GET', 'POST'],
+            '/api/candidate/resume/upload' => ['POST']
         ],
         'recruiter' => [
             '/recruiter' => ['GET'],
@@ -127,9 +147,14 @@ class AuthMiddleware
 
     private function redirect(string $url): void
     {
-        $baseUrl = '/Talent-HUB';
-        $fullUrl = $baseUrl . $url;
-        header("Location: {$fullUrl}");
+        // Don't add base URL if it's already included or if it's an absolute URL
+        if (str_starts_with($url, '/Talent-HUB') || str_starts_with($url, 'http')) {
+            header("Location: {$url}");
+        } else {
+            $baseUrl = '/Talent-HUB';
+            $fullUrl = $baseUrl . $url;
+            header("Location: {$fullUrl}");
+        }
         exit();
     }
 

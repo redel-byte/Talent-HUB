@@ -16,7 +16,7 @@ class UserRepository extends BaseRepository
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT u.id, u.fullname, u.email, u.role_id, r.name AS role
+            "SELECT u.*, r.name AS role
          FROM users u
          LEFT JOIN roles r ON u.role_id = r.id
          WHERE u.id = :id
@@ -37,7 +37,7 @@ class UserRepository extends BaseRepository
     public function findByEmail(string $email): ?array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT u.id, u.email, u.password, u.role_id, r.name AS role
+            "SELECT u.*, r.name AS role
     FROM users u
     LEFT JOIN roles r ON u.role_id = r.id
     WHERE u.email = :email
@@ -90,5 +90,28 @@ class UserRepository extends BaseRepository
     {
         $user = $this->findByEmail($email);
         return $user && password_verify($password, $user['password']);
+    }
+
+    public function updatePassword(int $userId, string $hashedPassword): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE users SET password = :password, updated_at = NOW() WHERE id = :id");
+        return $stmt->execute(['password' => $hashedPassword, 'id' => $userId]);
+    }
+
+    public function updateProfile(int $userId, array $data): bool
+    {
+        $setClause = [];
+        foreach ($data as $key => $value) {
+            $setClause[] = "{$key} = :{$key}";
+        }
+        $setClause = implode(', ', $setClause);
+        
+        $data['id'] = $userId;
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        
+        $sql = "UPDATE users SET {$setClause}, updated_at = :updated_at WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        
+        return $stmt->execute($data);
     }
 }

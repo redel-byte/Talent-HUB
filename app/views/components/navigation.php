@@ -25,6 +25,7 @@ $userEmail = $_SESSION['email'] ?? '';
                     <a href="/Talent-HUB/blog" class="text-gray-700 hover:text-purple-600 font-medium transition">Blog</a>
                 <?php else: ?>
                     <!-- Authenticated navigation -->
+                    <a href="/Talent-HUB/" class="text-gray-700 hover:text-purple-600 font-medium transition">Home</a>
                     <?php if ($userRole === 'candidate'): ?>
                         <a href="/Talent-HUB/candidate/dashboard" class="text-gray-700 hover:text-purple-600 font-medium transition">Dashboard</a>
                         <a href="/Talent-HUB/candidate/applications" class="text-gray-700 hover:text-purple-600 font-medium transition">Applications</a>
@@ -63,6 +64,9 @@ $userEmail = $_SESSION['email'] ?? '';
                             <i class="fas fa-chevron-down text-xs"></i>
                         </button>
                         <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                            <a href="/Talent-HUB/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">
+                                <i class="fas fa-home mr-2"></i>Home
+                            </a>
                             <?php if ($userRole === 'candidate'): ?>
                                 <a href="/Talent-HUB/candidate/dashboard" class="block px-4 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-600">
                                     <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
@@ -137,6 +141,7 @@ $userEmail = $_SESSION['email'] ?? '';
                     <?php else: ?>
                         <!-- Authenticated mobile menu -->
                         <div class="space-y-2">
+                            <a href="/Talent-HUB/" class="block py-2 text-gray-700 hover:text-purple-600">Home</a>
                             <div class="border-b border-gray-200 pb-4 mb-4">
                                 <p class="text-sm text-gray-600"><?= htmlspecialchars($userEmail) ?></p>
                                 <p class="text-xs text-gray-500 capitalize"><?= htmlspecialchars($userRole) ?></p>

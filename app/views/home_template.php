@@ -381,4 +381,4 @@
 </body>
 </html>
 <?php $content = ob_get_clean(); ?>
-<?php require_once __DIR__ . '/../layouts/base.php'; ?>
+<?php require_once __DIR__ . '/layouts/base.php'; ?>

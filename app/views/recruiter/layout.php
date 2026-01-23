@@ -22,8 +22,11 @@
                 <div class="flex items-center space-x-4">
                     <!-- Recruiter Navigation -->
                     <div class="flex items-center space-x-4">
+                        <a href="/Talent-HUB/" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
+                            <i class="fas fa-home mr-1"></i> Home
+                        </a>
                         <a href="/Talent-HUB/recruiter/dashboard" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
-                            <i class="fas fa-home mr-1"></i> Dashboard
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
                         </a>
                         <a href="/Talent-HUB/recruiter/jobs" class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium">
                             <i class="fas fa-briefcase mr-1"></i> Job Postings
@@ -61,6 +64,20 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <?php if (isset($_SESSION['error'])): ?>
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                <?= htmlspecialchars($_SESSION['error']) ?>
+                <?php unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['success'])): ?>
+            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+                <?= htmlspecialchars($_SESSION['success']) ?>
+                <?php unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+        
         <?= $content ?? '' ?>
     </main>
 

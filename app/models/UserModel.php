@@ -40,7 +40,8 @@ class UserModel extends User
        
     public function verify(string $email, string $password): bool
     {
-      return $this->userRepository->verifyPassword($email, $password);
+        $user = $this->findByEmail($email);
+        return $user && password_verify($password, $user['password']);
     }
 }
 

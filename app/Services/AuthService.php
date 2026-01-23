@@ -46,16 +46,24 @@ class AuthService
         }
 
         // Prepare user data
+        $hashedPassword = (new Hashpassword($userData['password']))->getHashedPassword();
         $userRecord = [
             'email' => Security::sanitize($userData['email']),
             'fullname' => Security::sanitize(trim($userData['first_name'] . ' ' . $userData['last_name'])),
-            'password' => (new Hashpassword($userData['password']))->getHashedPassword(),
+            'password' => $hashedPassword,
             'phone_number' => Security::sanitize($userData['phone_number']),
             'created_at' => date('Y-m-d H:i:s')
         ];
 
         // Create user
-        $result = $this->userRepository->createWithRole($userRecord, $userData['role']);
+        $result = $this->userRepository->createWithRole(
+            $userRecord['email'], 
+            $hashedPassword, 
+            $userRecord['phone_number'], 
+            $userData['role'], 
+            $userData['first_name'], 
+            $userData['last_name']
+        );
         
         if ($result) {
             return ['success' => true, 'message' => 'Account created successfully'];

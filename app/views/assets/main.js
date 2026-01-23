@@ -132,10 +132,38 @@ function handleLoginSubmit(e) {
     // Show loading state
     showLoadingState();
     
-    // Submit form normally
-    setTimeout(() => {
-        e.target.submit();
-    }, 500);
+    // Make actual login request
+    fetch('/Talent-HUB/api/auth/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        },
+        body: JSON.stringify({ email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingState();
+        if (data.success) {
+            showNotification('Login successful! Redirecting...', 'success');
+            // Update localStorage for client-side state
+            localStorage.setItem('isLoggedIn', 'true');
+            localStorage.setItem('userRole', data.role);
+            localStorage.setItem('userEmail', email);
+            
+            // Redirect to dashboard
+            setTimeout(() => {
+                window.location.href = data.redirect || '/Talent-HUB/dashboard';
+            }, 1500);
+        } else {
+            showNotification(data.message || 'Login failed', 'error');
+        }
+    })
+    .catch(error => {
+        hideLoadingState();
+        showNotification('Network error. Please try again.', 'error');
+        console.error('Login error:', error);
+    });
 }
 
 function handleRegisterSubmit(e) {
@@ -182,10 +210,36 @@ function handleRegisterSubmit(e) {
     // Show loading state
     showLoadingState();
     
-    // Submit form normally
-    setTimeout(() => {
-        e.target.submit();
-    }, 500);
+    // Make actual registration request
+    fetch('/Talent-HUB/api/auth/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || ''
+        },
+        body: JSON.stringify({ firstName, lastName, email, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        hideLoadingState();
+        if (data.success) {
+            showNotification('Registration successful! Please check your email.', 'success');
+            // Clear form
+            e.target.reset();
+            
+            // Redirect to login after delay
+            setTimeout(() => {
+                window.location.href = '/Talent-HUB/login';
+            }, 2000);
+        } else {
+            showNotification(data.message || 'Registration failed', 'error');
+        }
+    })
+    .catch(error => {
+        hideLoadingState();
+        showNotification('Network error. Please try again.', 'error');
+        console.error('Registration error:', error);
+    });
 }
 
 function initNotifications() {

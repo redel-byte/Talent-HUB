@@ -15,15 +15,14 @@ class RecruiterController extends Controller
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new UserModel(Database::connection());
-        $this->requireRole('recruiter');
+        $this->userModel = new UserModel(\App\Middleware\Database::connection());
     }
 
     public function dashboard()
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('recruiter/dashboard', [
@@ -36,7 +35,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('recruiter/jobs', [
@@ -49,7 +48,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('recruiter/candidates', [
@@ -62,7 +61,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('recruiter/company', [
@@ -75,7 +74,7 @@ class RecruiterController extends Controller
     {
         $user = $this->getCurrentUser();
         if (!$user) {
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         $this->view('recruiter/settings', [
@@ -97,12 +96,12 @@ class RecruiterController extends Controller
     {
         if (!$this->isLoggedIn()) {
             $_SESSION['error'] = 'Please login to access this page.';
-            $this->redirect('/Talent-HUB/login');
+            $this->redirect('/login');
         }
 
         if (!isset($_SESSION['role']) || $_SESSION['role'] !== $requiredRole) {
             $_SESSION['error'] = 'Access denied. Insufficient permissions.';
-            $this->redirect('/Talent-HUB/403');
+            $this->redirect('/403');
         }
     }
 }

@@ -17,7 +17,7 @@ class AuthController extends Controller
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new UserModel(Database::connection());
+        $this->userModel = new UserModel(\App\Middleware\Database::connection());
     }
 
     public function loginForm()
@@ -74,25 +74,14 @@ class AuthController extends Controller
             $_SESSION['role'] = $user['role'] ?? 'candidate';
             $_SESSION['last_activity'] = time();
             
-            // Set localStorage for JavaScript navigation
-            // This would be better handled via API, but for now we'll set it server-side
-            echo "<script>
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userRole', '" . ($user['role'] ?? 'candidate') . "');
-                localStorage.setItem('userEmail', '" . $user['email'] . "');
-                localStorage.setItem('userId', '" . $user['id'] . "');
-            </script>";
-            
             // Clear CSRF token and redirect
             CSRFProtection::clearToken();
             
             // Role-based redirection
             switch ($_SESSION['role']) {
-                case 'condidat':
                 case 'candidate':
                     $this->redirect('/candidate/dashboard');
                     break;
-                case 'recruteur':
                 case 'recruiter':
                     $this->redirect('/recruiter/dashboard');
                     break;
@@ -359,14 +348,6 @@ class AuthController extends Controller
 
     public function logout()
     {
-        // Clear localStorage
-        echo "<script>
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('userRole');
-            localStorage.removeItem('userEmail');
-            localStorage.removeItem('userId');
-        </script>";
-        
         $_SESSION = [];
         if (session_id() !== '') {
             session_destroy();
@@ -383,11 +364,9 @@ class AuthController extends Controller
         // Redirect to role-specific dashboard
         $role = $_SESSION['role'] ?? 'candidate';
         switch ($role) {
-            case 'condidat':
             case 'candidate':
                 $this->redirect('/candidate/dashboard');
                 break;
-            case 'recruteur':
             case 'recruiter':
                 $this->redirect('/recruiter/dashboard');
                 break;

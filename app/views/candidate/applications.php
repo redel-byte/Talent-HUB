@@ -98,7 +98,7 @@ function getStatusColor(string $status): string
                             <div class="flex justify-between items-start">
                                 <div class="flex-1">
                                     <h3 class="text-lg font-medium text-gray-900"><?= htmlspecialchars($application['title']) ?></h3>
-                                    <p class="text-gray-600"><?= htmlspecialchars($application['company_name'] ?? 'Unknown Company') ?></p>
+                                    <p class="text-gray-600"><?= htmlspecialchars($application['recruiter_name'] ?? 'Unknown Recruiter') ?></p>
                                     <div class="mt-2 flex items-center space-x-4 text-sm text-gray-500">
                                         <span><i class="fas fa-map-marker-alt mr-1"></i><?= htmlspecialchars($application['location'] ?? 'Remote') ?></span>
                                         <span><i class="fas fa-dollar-sign mr-1"></i><?= number_format($application['salary_min'] ?? $application['salary'] ?? 0) ?><?= $application['salary_max'] ? ' - ' . number_format($application['salary_max']) : '' ?></span>

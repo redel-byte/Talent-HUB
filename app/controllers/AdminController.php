@@ -15,8 +15,7 @@ class AdminController extends Controller
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
         }
-        $this->userModel = new UserModel(Database::connection());
-        $this->requireRole('admin');
+        $this->userModel = new UserModel(\App\Middleware\Database::connection());
     }
 
     public function dashboard()
@@ -82,5 +81,14 @@ class AdminController extends Controller
             'user' => $user,
             'page_title' => 'System Logs - TalentHub'
         ]);
+    }
+
+    protected function getCurrentUser(): ?array
+    {
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
+
+        return $this->userModel->findById($_SESSION['user_id']);
     }
 }

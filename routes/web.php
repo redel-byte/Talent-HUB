@@ -29,6 +29,10 @@ $router->addRouter('GET', '/find-jobs', [HomeController::class, 'findJobs']);
 $router->addRouter('GET', '/pricing', [HomeController::class, 'pricing']);
 $router->addRouter('GET', '/blog', [HomeController::class, 'blog']);
 $router->addRouter('GET', '/how-it-works', [HomeController::class, 'howItWorks']);
+$router->addRouter('GET', '/about', [HomeController::class, 'about']);
+$router->addRouter('GET', '/contact', [HomeController::class, 'contact']);
+$router->addRouter('GET', '/privacy', [HomeController::class, 'privacy']);
+$router->addRouter('GET', '/terms', [HomeController::class, 'terms']);
 
 // Authentication Routes
 $router->addRouter('GET', '/login', [AuthController::class, 'loginForm']);
@@ -46,8 +50,19 @@ $router->addRouter('GET', '/clear-session', [AuthController::class, 'logout']);
 $router->addRouter('GET', '/candidate', [CandidateController::class, 'dashboard']);
 $router->addRouter('GET', '/candidate/dashboard', [CandidateController::class, 'dashboard']);
 $router->addRouter('GET', '/candidate/profile', [CandidateController::class, 'profile']);
+$router->addRouter('POST', '/candidate/profile/update', [CandidateController::class, 'profileUpdate']);
 $router->addRouter('GET', '/candidate/applications', [CandidateController::class, 'applications']);
 $router->addRouter('GET', '/candidate/settings', [CandidateController::class, 'settings']);
+
+// Candidate API Routes
+$router->addRouter('GET', '/api/candidate/application/details', [CandidateController::class, 'getApplicationDetails']);
+$router->addRouter('POST', '/api/candidate/application/withdraw', [CandidateController::class, 'withdrawApplication']);
+$router->addRouter('POST', '/api/candidate/application/accept', [CandidateController::class, 'acceptOffer']);
+$router->addRouter('POST', '/api/candidate/application/reapply', [CandidateController::class, 'reapplyJob']);
+$router->addRouter('POST', '/api/candidate/job/save', [CandidateController::class, 'saveJob']);
+$router->addRouter('POST', '/api/candidate/job/unsave', [CandidateController::class, 'unsaveJob']);
+$router->addRouter('POST', '/api/candidate/resume/upload', [CandidateController::class, 'uploadResume']);
+$router->addRouter('POST', '/api/candidate/job/apply', [CandidateController::class, 'applyForJob']);
 
 // Recruiter Routes
 $router->addRouter('GET', '/recruiter', [RecruiterController::class, 'dashboard']);

@@ -15,6 +15,7 @@
     <base href="/Talent-HUB/">
     <!-- Main JavaScript -->
     <script src="/Talent-HUB/app/views/assets/main.js" defer></script>
+    <script src="/Talent-HUB/app/views/assets/enhancements.js" defer></script>
     <style>
         * {
             font-family: 'Poppins', sans-serif;
@@ -83,7 +84,7 @@
     <?php require_once __DIR__ . '/../components/navigation.php'; ?>
 
     <!-- Main Content -->
-    <main>
+    <main id="main-content">
         <?= $content ?? '' ?>
     </main>
 

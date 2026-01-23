@@ -8,15 +8,29 @@ class Controller
     public function view(string $view, array $data = [])
     {
         extract($data);
-        require_once __DIR__ . "/../views/{$view}.php";
+        $viewPath = __DIR__ . "/../views/{$view}.php";
+        
+        if (!file_exists($viewPath)) {
+            http_response_code(404);
+            echo "<h1>View Not Found</h1>";
+            echo "<p>The view file '{$view}.php' could not be found.</p>";
+            return;
+        }
+        
+        require_once $viewPath;
     }
 
     
     protected function redirect($url)
     {
-        $baseUrl = '/Talent-HUB';
-        $fullUrl = $baseUrl . $url;
-        header("Location: {$fullUrl}");
+        // Check if URL already includes the base path
+        if (strpos($url, '/Talent-HUB') === 0) {
+            header("Location: {$url}");
+        } else {
+            $baseUrl = '/Talent-HUB';
+            $fullUrl = $baseUrl . $url;
+            header("Location: {$fullUrl}");
+        }
         exit();
     }
 

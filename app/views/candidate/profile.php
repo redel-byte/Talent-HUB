@@ -121,14 +121,132 @@
                     <!-- Resume Upload -->
                     <div>
                         <h4 class="text-md font-medium text-gray-900 mb-4">Resume</h4>
+                        
+                        <?php if (!empty($user['resume_path'])): ?>
+                            <div class="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-file-pdf text-green-600 text-xl mr-3"></i>
+                                        <div>
+                                            <p class="text-sm font-medium text-green-800">Resume Uploaded</p>
+                                            <p class="text-xs text-green-600"><?= htmlspecialchars(basename($user['resume_path'])) ?></p>
+                                        </div>
+                                    </div>
+                                    <a href="/Talent-HUB/public/uploads/resumes/<?= htmlspecialchars($user['resume_path']) ?>" target="_blank" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                        View Resume
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                        
                         <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                             <i class="fas fa-cloud-upload-alt text-gray-400 text-3xl mb-3"></i>
-                            <p class="text-sm text-gray-600 mb-2">Upload your resume (PDF, DOC, DOCX)</p>
-                            <input type="file" name="resume" accept=".pdf,.doc,.docx" class="hidden" id="resume-upload">
+                            <p class="text-sm text-gray-600 mb-2">Upload your resume (PDF, DOC, DOCX) - Max 2MB</p>
+                            <input type="file" name="resume" accept=".pdf,.doc,.docx" class="hidden" id="resume-upload" onchange="handleFileSelect(this);">
                             <button type="button" onclick="document.getElementById('resume-upload').click()" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                Choose File
+                                <?= !empty($user['resume_path']) ? 'Replace Resume' : 'Choose File' ?>
                             </button>
                         </div>
+                        
+                        <script>
+                        function handleFileSelect(input) {
+                            const file = input.files[0];
+                            if (file) {
+                                const allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                                const maxSize = 2 * 1024 * 1024; // 2MB to match PHP config
+                                
+                                if (!allowedTypes.includes(file.type)) {
+                                    showNotification('Please upload a PDF, DOC, or DOCX file', 'error');
+                                    input.value = '';
+                                    return;
+                                }
+                                
+                                if (file.size > maxSize) {
+                                    showNotification('File size must be less than 2MB', 'error');
+                                    input.value = '';
+                                    return;
+                                }
+                                
+                                uploadFileDirect(file);
+                            }
+                        }
+                        
+                        function uploadFileDirect(file) {
+                            showNotification('Uploading resume...', 'info');
+                            
+                            const formData = new FormData();
+                            formData.append('resume', file);
+                            
+                            fetch('/Talent-HUB/api/candidate/resume/upload', {
+                                method: 'POST',
+                                body: formData,
+                                credentials: 'same-origin'
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showNotification('Resume uploaded successfully!', 'success');
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1500);
+                                } else {
+                                    showNotification('Upload failed: ' + (data.error || 'Unknown error'), 'error');
+                                }
+                            })
+                            .catch(error => {
+                                showNotification('Upload failed. Please try again.', 'error');
+                            });
+                        }
+                        
+                        function showNotification(message, type = 'info') {
+                            // Remove existing notifications
+                            const existingNotifications = document.querySelectorAll('.notification');
+                            existingNotifications.forEach(notif => notif.remove());
+                            
+                            const notification = document.createElement('div');
+                            const icons = {
+                                success: 'check-circle',
+                                error: 'exclamation-circle',
+                                warning: 'exclamation-triangle',
+                                info: 'info-circle'
+                            };
+                            
+                            const colors = {
+                                success: 'bg-green-500',
+                                error: 'bg-red-500',
+                                warning: 'bg-yellow-500',
+                                info: 'bg-blue-500'
+                            };
+                            
+                            notification.className = `notification fixed top-4 right-4 z-50 px-6 py-4 rounded-lg shadow-lg text-white ${colors[type]} transform translate-x-full transition-all duration-300 max-w-sm backdrop-blur-sm`;
+                            notification.innerHTML = `
+                                <div class="flex items-start">
+                                    <i class="fas fa-${icons[type]} mr-3 mt-0.5 flex-shrink-0 text-lg"></i>
+                                    <div class="flex-1">
+                                        <p class="font-medium">${message}</p>
+                                        <button class="mt-2 text-xs opacity-75 hover:opacity-100 transition-opacity focus:outline-none" onclick="this.parentElement.parentElement.parentElement.remove()">Dismiss</button>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            document.body.appendChild(notification);
+                            
+                            // Animate in
+                            setTimeout(() => {
+                                notification.classList.remove('translate-x-full');
+                                notification.classList.add('translate-x-0');
+                            }, 100);
+                            
+                            // Auto remove after 5 seconds
+                            setTimeout(() => {
+                                notification.classList.add('translate-x-full');
+                                notification.classList.remove('translate-x-0');
+                                setTimeout(() => {
+                                    notification.remove();
+                                }, 300);
+                            }, 5000);
+                        }
+                        </script>
                     </div>
 
                     <div class="flex justify-end space-x-3">
