@@ -18,7 +18,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Total Applications</dt>
-                            <dd class="text-lg font-medium text-gray-900">12</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= htmlspecialchars($stats['total_applications'] ?? 0) ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Profile Views</dt>
-                            <dd class="text-lg font-medium text-gray-900">48</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= number_format($stats['profile_views'] ?? 0) ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Saved Jobs</dt>
-                            <dd class="text-lg font-medium text-gray-900">7</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= htmlspecialchars($stats['saved_jobs'] ?? 0) ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Profile Completion</dt>
-                            <dd class="text-lg font-medium text-gray-900">85%</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= htmlspecialchars($stats['profile_completion'] ?? 0) ?>%</dd>
                         </dl>
                     </div>
                 </div>
@@ -74,111 +74,42 @@
         </div>
     </div>
 
-    <!-- Recent Activity -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- Recent Applications -->
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Applications</h3>
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-building text-blue-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Senior Developer</p>
-                                <p class="text-sm text-gray-500">Tech Corp • Applied 2 days ago</p>
-                            </div>
-                        </div>
-                        <span class="px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">Under Review</span>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-building text-green-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Frontend Developer</p>
-                                <p class="text-sm text-gray-500">StartupXYZ • Applied 5 days ago</p>
+    <!-- Recommended Jobs -->
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recommended Jobs</h3>
+            <div class="space-y-3">
+                <?php if (!empty($recommended_jobs)): ?>
+                    <?php foreach ($recommended_jobs as $job): ?>
+                        <?php 
+                        $company = $job['company_name'] ?? 'Company';
+                        ?>
+                        <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors" onclick="window.location.href='/Talent-HUB/candidate/jobs'">
+                            <div class="flex items-start justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900"><?= htmlspecialchars($job['title']) ?></h4>
+                                    <p class="text-sm text-gray-500"><?= htmlspecialchars($company) ?> • <?= htmlspecialchars($job['location'] ?? 'Not specified') ?></p>
+                                    <p class="text-xs text-gray-400 mt-1">Posted <?= date('M j, Y', strtotime($job['created_at'])) ?> • <?= $job['salary'] > 0 ? '$' . number_format($job['salary']) : 'Not specified' ?></p>
+                                </div>
+                                <button class="text-blue-600 hover:text-blue-800" onclick="event.stopPropagation(); window.location.href='/Talent-HUB/candidate/jobs'">
+                                    <i class="fas fa-arrow-right"></i>
+                                </button>
                             </div>
                         </div>
-                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">Interview</span>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-briefcase text-4xl mb-3"></i>
+                        <p>No jobs available</p>
+                        <p class="text-sm">Check back later for new opportunities</p>
                     </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-building text-red-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Full Stack Developer</p>
-                                <p class="text-sm text-gray-500">Digital Agency • Applied 1 week ago</p>
-                            </div>
-                        </div>
-                        <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">Not Selected</span>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <a href="/Talent-HUB/candidate/applications" class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                        View all applications <i class="fas fa-arrow-right ml-1"></i>
-                    </a>
-                </div>
+                <?php endif; ?>
             </div>
-        </div>
-
-        <!-- Recommended Jobs -->
-        <div class="bg-white shadow rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recommended Jobs</h3>
-                <div class="space-y-3">
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">React Developer</h4>
-                                <p class="text-sm text-gray-500">Innovation Labs • Remote</p>
-                                <p class="text-xs text-gray-400 mt-1">Posted 3 days ago • $80k-$120k</p>
-                            </div>
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">PHP Backend Developer</h4>
-                                <p class="text-sm text-gray-500">Web Solutions Inc • New York</p>
-                                <p class="text-xs text-gray-400 mt-1">Posted 1 week ago • $70k-$100k</p>
-                            </div>
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer transition-colors">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">DevOps Engineer</h4>
-                                <p class="text-sm text-gray-500">CloudTech • San Francisco</p>
-                                <p class="text-xs text-gray-400 mt-1">Posted 2 weeks ago • $90k-$130k</p>
-                            </div>
-                            <button class="text-blue-600 hover:text-blue-800">
-                                <i class="fas fa-bookmark"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mt-4">
-                    <button class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                        Browse more jobs <i class="fas fa-arrow-right ml-1"></i>
-                    </button>
-                </div>
+            
+            <div class="mt-4">
+                <button class="text-sm font-medium text-blue-600 hover:text-blue-500" onclick="window.location.href='/Talent-HUB/candidate/jobs'">
+                    Browse more jobs <i class="fas fa-arrow-right ml-1"></i>
+                </button>
             </div>
         </div>
     </div>

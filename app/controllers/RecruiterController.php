@@ -4,19 +4,17 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Database;
-use App\Repository\CompanyRepository;
-use App\Repository\JobOfferRepository;
-use App\Repository\CategorieRepository ;
+use App\Repository\UserRepository;
 use App\Repository\ApplicationRepository;
-use App\Repository\TagRepository;
+use App\Repository\JobOfferRepository;
+use App\Repository\CompanyRepository;
 
 class RecruiterController extends Controller
 {
     private CompanyRepository $companyRepository;
     private JobOfferRepository $jobRepository;
-    private CategorieRepository $categoryRepository;
     private ApplicationRepository $applicationRepository;
-    private TagRepository $tagRepository;
+    private UserRepository $userRepository;
 
     public function __construct()
     {
@@ -26,9 +24,8 @@ class RecruiterController extends Controller
         $this->requireRole('recruiter');
         $this->companyRepository = new CompanyRepository(Database::connection());
         $this->jobRepository = new JobOfferRepository(Database::connection());
-        $this->categoryRepository = new CategorieRepository(Database::connection());
         $this->applicationRepository = new ApplicationRepository(Database::connection());
-        $this->tagRepository = new TagRepository(Database::connection());
+        $this->userRepository = new UserRepository(Database::connection());
     }
 
     public function dashboard()
@@ -38,8 +35,52 @@ class RecruiterController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            // Create company if not exists
+            $this->companyRepository->create($user['id'], [
+                'name' => $user['fullname'] . ' Company',
+                'address' => '',
+                'email' => $user['email']
+            ]);
+            $company = $this->companyRepository->findByUser($user['id']);
+        }
+
+        // Get dashboard statistics
+        $jobs = $company ? $this->jobRepository->findByCompany($company['id']) : [];
+        $activeJobs = array_filter($jobs, fn($job) => !($job['deleted_at'] ?? null));
+        $allApplications = [];
+        
+        foreach ($activeJobs as $job) {
+            $applications = $this->applicationRepository->findByJobOffer($job['id']);
+            $allApplications = array_merge($allApplications, $applications);
+        }
+        
+        // Calculate statistics
+        $stats = [
+            'active_jobs' => count($activeJobs),
+            'total_applicants' => count($allApplications),
+            'profile_views' => 0, // TODO: Implement profile views tracking
+            'interview_rate' => count($allApplications) > 0 ? round((count(array_filter($allApplications, fn($app) => ($app['status'] ?? '') === 'interview')) / count($allApplications)) * 100) : 0
+        ];
+
+        // Get recent applications (last 5)
+        $recentApplications = array_slice($allApplications, 0, 5);
+        
+        // Get recent job postings (last 3) with applicant counts
+        $recentJobs = [];
+        foreach (array_slice($activeJobs, 0, 3) as $job) {
+            $applications = $this->applicationRepository->findByJobOffer($job['id']);
+            $job['applicant_count'] = count($applications);
+            $recentJobs[] = $job;
+        }
+
         $this->view('recruiter/dashboard', [
             'user' => $user,
+            'stats' => $stats,
+            'recent_applications' => $recentApplications,
+            'recent_jobs' => $recentJobs,
             'page_title' => 'Recruiter Dashboard - TalentHub'
         ]);
     }
@@ -79,7 +120,7 @@ class RecruiterController extends Controller
             'jobs' => $jobs,
             'page_title' => 'Manage Job Postings - TalentHub'
         ]);
-    }     
+    }
 
     public function candidates()
     {
@@ -88,10 +129,68 @@ class RecruiterController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
+        // Get all candidates
+        $candidates = $this->userRepository->findByRole('candidate');
+
         $this->view('recruiter/candidates', [
             'user' => $user,
+            'candidates' => $candidates,
             'page_title' => 'View Candidates - TalentHub'
         ]);
+    }
+
+    public function viewCandidate()
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/Talent-HUB/login');
+        }
+
+        $candidateId = (int)($_GET['id'] ?? 0);
+        if (!$candidateId) {
+            $_SESSION['error'] = 'Invalid candidate ID.';
+            $this->redirect('/Talent-HUB/recruiter/candidates');
+        }
+
+        $candidate = $this->userRepository->findById($candidateId);
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            $_SESSION['error'] = 'Candidate not found.';
+            $this->redirect('/Talent-HUB/recruiter/candidates');
+        }
+
+        $this->view('recruiter/candidate_profile', [
+            'user' => $user,
+            'candidate' => $candidate,
+            'page_title' => 'Candidate Profile - TalentHub'
+        ]);
+    }
+
+    public function deleteCandidate()
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/Talent-HUB/login');
+        }
+
+        $candidateId = (int)($_GET['id'] ?? 0);
+        if (!$candidateId) {
+            $_SESSION['error'] = 'Invalid candidate ID.';
+            $this->redirect('/Talent-HUB/recruiter/candidates');
+        }
+
+        $candidate = $this->userRepository->findById($candidateId);
+        if (!$candidate || $candidate['role'] !== 'candidate') {
+            $_SESSION['error'] = 'Candidate not found.';
+            $this->redirect('/Talent-HUB/recruiter/candidates');
+        }
+
+        if ($this->userRepository->delete($candidateId)) {
+            $_SESSION['success'] = 'Candidate deleted successfully.';
+        } else {
+            $_SESSION['error'] = 'Failed to delete candidate.';
+        }
+
+        $this->redirect('/Talent-HUB/recruiter/candidates');
     }
 
     public function company()
@@ -445,5 +544,56 @@ class RecruiterController extends Controller
             'applications' => $applications,
             'page_title' => 'Applications for ' . $job['title']
         ]);
+    }
+
+    public function updateApplicationStatus()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/Talent-HUB/recruiter/dashboard');
+        }
+
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/Talent-HUB/login');
+        }
+
+        $applicationId = (int)($_POST['application_id'] ?? 0);
+        $status = trim($_POST['status'] ?? '');
+        
+        if (!$applicationId || !in_array($status, ['accepted', 'rejected', 'interview'])) {
+            $_SESSION['error'] = 'Invalid request.';
+            $this->redirect('/Talent-HUB/recruiter/dashboard');
+        }
+
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            $_SESSION['error'] = 'Company not found.';
+            $this->redirect('/Talent-HUB/recruiter/dashboard');
+        }
+
+        // Get application and verify ownership
+        $application = $this->applicationRepository->findById($applicationId);
+        if (!$application) {
+            $_SESSION['error'] = 'Application not found.';
+            $this->redirect('/Talent-HUB/recruiter/dashboard');
+        }
+
+        // Verify the job belongs to this recruiter's company
+        $job = $this->jobRepository->findById($application['job_offer_id']);
+        if (!$job || (isset($job[0]['company_id']) && $job[0]['company_id'] != $company['id'])) {
+            $_SESSION['error'] = 'Access denied.';
+            $this->redirect('/Talent-HUB/recruiter/dashboard');
+        }
+
+        // Update application status and redirect back to applications page
+        if ($this->applicationRepository->updateStatus($applicationId, $status)) {
+            $_SESSION['success'] = 'Application status updated successfully.';
+        } else {
+            $_SESSION['error'] = 'Failed to update application status.';
+        }
+
+        // Redirect back to the applications page for this job
+        $this->redirect('/Talent-HUB/recruiter/applications?job_id=' . $application['job_offer_id']);
     }
 }

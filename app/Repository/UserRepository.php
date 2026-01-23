@@ -11,7 +11,7 @@ class UserRepository
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare(
-            "SELECT id, fullname, email, role
+            "SELECT id, fullname, email, phone_number as phone, role, created_at
          FROM users
          WHERE id = :id
          LIMIT 1"
@@ -45,12 +45,45 @@ class UserRepository
         return $user ?: null;
     }
 
-    public function create(array $data): bool
+    public function findByRole(string $role): array
     {
         $stmt = $this->pdo->prepare(
-            "INSERT INTO users (fullname, email, password, phone_number, role, created_at)
-             VALUES (:fullname, :email, :password, :phone, :role, NOW())"
+            "SELECT id, fullname, email, phone_number as phone, created_at
+             FROM users
+             WHERE role = :role
+             ORDER BY created_at DESC"
         );
-        return $stmt->execute($data);
+
+        $stmt->execute(['role' => $role]);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    }
+
+    public function update(int $id, array $data): bool
+    {
+        $fields = [];
+        $values = [':id' => $id];
+
+        $allowedFields = ['fullname', 'phone_number'];
+        
+        foreach ($allowedFields as $field) {
+            if (isset($data[$field])) {
+                $fields[] = "$field = :$field";
+                $values[":$field"] = $data[$field];
+            }
+        }
+
+        if (empty($fields)) {
+            return false;
+        }
+
+        $sql = "UPDATE users SET " . implode(', ', $fields) . " WHERE id = :id";
+        $stmt = $this->pdo->prepare($sql);
+        return $stmt->execute($values);
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
     }
 }

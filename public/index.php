@@ -44,6 +44,9 @@ $router->addRouter('GET', '/logout', [AuthController::class, 'logout']);
 $router->addRouter('GET', '/candidate', [CandidateController::class, 'dashboard']);
 $router->addRouter('GET', '/candidate/dashboard', [CandidateController::class, 'dashboard']);
 $router->addRouter('GET', '/candidate/profile', [CandidateController::class, 'profile']);
+$router->addRouter('POST', '/candidate/profile/update', [CandidateController::class, 'updateProfile']);
+$router->addRouter('GET', '/candidate/jobs', [CandidateController::class, 'jobs']);
+$router->addRouter('POST', '/candidate/jobs/apply', [CandidateController::class, 'applyJob']);
 $router->addRouter('GET', '/candidate/applications', [CandidateController::class, 'applications']);
 $router->addRouter('GET', '/candidate/settings', [CandidateController::class, 'settings']);
 
@@ -52,6 +55,8 @@ $router->addRouter('GET', '/recruiter', [RecruiterController::class, 'dashboard'
 $router->addRouter('GET', '/recruiter/dashboard', [RecruiterController::class, 'dashboard']);
 $router->addRouter('GET', '/recruiter/jobs', [RecruiterController::class, 'jobs']);
 $router->addRouter('GET', '/recruiter/candidates', [RecruiterController::class, 'candidates']);
+$router->addRouter('GET', '/recruiter/candidates/view', [RecruiterController::class, 'viewCandidate']);
+$router->addRouter('GET', '/recruiter/candidates/delete', [RecruiterController::class, 'deleteCandidate']);
 $router->addRouter('GET', '/recruiter/company', [RecruiterController::class, 'company']);
 $router->addRouter('GET', '/recruiter/settings', [RecruiterController::class, 'settings']);
 $router->addRouter('GET', '/recruiter/company/create', [RecruiterController::class, 'createCompanyForm']);
@@ -62,6 +67,7 @@ $router->addRouter('GET', '/recruiter/jobs/edit', [RecruiterController::class, '
 $router->addRouter('POST', '/recruiter/jobs/edit', [RecruiterController::class, 'editJob']);
 $router->addRouter('GET', '/recruiter/jobs/delete', [RecruiterController::class, 'deleteJob']);
 $router->addRouter('GET', '/recruiter/applications', [RecruiterController::class, 'applications']);
+$router->addRouter('POST', '/recruiter/applications/update', [RecruiterController::class, 'updateApplicationStatus']);
 
 // Admin Routes
 $router->addRouter('GET', '/admin', [AdminController::class, 'dashboard']);

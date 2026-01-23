@@ -196,7 +196,7 @@ class AuthController extends Controller
             'fullname' => $firstName . ' ' . $lastName,
             'email' => $email,
             'password' => password_hash($password, PASSWORD_DEFAULT),
-            'phone' => '', // Assuming phone is optional
+            'phone' => '',
             'role' => $role
         ]);
 
@@ -204,18 +204,16 @@ class AuthController extends Controller
             $this->fail('Registration failed.', '/register', $email);
         }
 
-        // Create company for recruiters
         if ($role === 'recruiter') {
             $user = $this->userRepository->findByEmail($email);
             if ($user) {
-                $companyCreated = $this->companyRepository->create([
+                $companyCreated = $this->companyRepository->create( $user['id'],[
                     'name' => $companyName,
                     'address' => $companyAddress,
                     'email' => $companyEmail,
-                    'user_id' => $user['id']
+                   
                 ]);
                 if (!$companyCreated) {
-                    // Log error but don't fail registration
                     error_log('Failed to create company for user: ' . $email);
                 }
             }

@@ -1,7 +1,13 @@
-<?php require_once __DIR__ . '/../candidate/layout.php'; ?>
+<?php ob_start(); ?>
 
-<div class="bg-white shadow rounded-lg p-6">
-    <h2 class="text-2xl font-bold text-gray-900 mb-6">Settings</h2>
+<!-- Settings Content -->
+<div class="px-4 py-6 sm:px-0">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Settings</h1>
+        <p class="mt-2 text-gray-600">Manage your account settings and preferences.</p>
+    </div>
+
+    <div class="bg-white shadow rounded-lg p-6">
     
     <div class="space-y-8">
         <!-- Account Settings -->
@@ -93,3 +99,6 @@
         </button>
     </div>
 </div>
+
+<?php $content = ob_get_clean(); ?>
+<?php require_once __DIR__ . '/layout.php'; ?>

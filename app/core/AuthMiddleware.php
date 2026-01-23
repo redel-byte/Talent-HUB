@@ -27,6 +27,9 @@ class AuthMiddleware
             '/candidate' => ['GET'],
             '/candidate/dashboard' => ['GET'],
             '/candidate/profile' => ['GET'],
+            '/candidate/profile/update' => ['POST'],
+            '/candidate/jobs' => ['GET'],
+            '/candidate/jobs/apply' => ['POST'],
             '/candidate/applications' => ['GET'],
             '/candidate/settings' => ['GET']
         ],
@@ -38,10 +41,13 @@ class AuthMiddleware
             '/recruiter/jobs/edit' => ['GET', 'POST'],
             '/recruiter/jobs/delete' => ['GET'],
             '/recruiter/candidates' => ['GET'],
+            '/recruiter/candidates/view' => ['GET'],
+            '/recruiter/candidates/delete' => ['GET'],
             '/recruiter/company' => ['GET'],
             '/recruiter/company/create' => ['GET', 'POST'],
             '/recruiter/settings' => ['GET'],
-            '/recruiter/applications' => ['GET']
+            '/recruiter/applications' => ['GET'],
+            '/recruiter/applications/update' => ['POST']
         ],
         'admin' => [
             '/admin' => ['GET'],

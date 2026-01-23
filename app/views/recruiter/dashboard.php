@@ -18,7 +18,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Active Jobs</dt>
-                            <dd class="text-lg font-medium text-gray-900">8</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= htmlspecialchars($stats['active_jobs'] ?? 0) ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -34,7 +34,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Total Applicants</dt>
-                            <dd class="text-lg font-medium text-gray-900">156</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= htmlspecialchars($stats['total_applicants'] ?? 0) ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Profile Views</dt>
-                            <dd class="text-lg font-medium text-gray-900">1,247</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= number_format($stats['profile_views'] ?? 0) ?></dd>
                         </dl>
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                     <div class="ml-5 w-0 flex-1">
                         <dl>
                             <dt class="text-sm font-medium text-gray-500 truncate">Interview Rate</dt>
-                            <dd class="text-lg font-medium text-gray-900">23%</dd>
+                            <dd class="text-lg font-medium text-gray-900"><?= htmlspecialchars($stats['interview_rate'] ?? 0) ?>%</dd>
                         </dl>
                     </div>
                 </div>
@@ -103,65 +103,43 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Recent Applications</h3>
                 <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-blue-600"></i>
+                    <?php if (!empty($recent_applications)): ?>
+                        <?php foreach ($recent_applications as $application): ?>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                        <i class="fas fa-user text-blue-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-900"><?= htmlspecialchars($application['candidate_name'] ?? 'Unknown Candidate') ?></p>
+                                        <p class="text-sm text-gray-500"><?= htmlspecialchars($application['job_title'] ?? 'Unknown Job') ?> • Applied <?= date('M j, Y', strtotime($application['created_at'])) ?></p>
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <form action="/Talent-HUB/recruiter/applications/update-status" method="POST" class="inline">
+                                        <input type="hidden" name="application_id" value="<?= $application['id'] ?>">
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="text-green-600 hover:text-green-800" title="Approve" onclick="return confirm('Approve this application?')">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </form>
+                                    <form action="/Talent-HUB/recruiter/applications/update-status" method="POST" class="inline">
+                                        <input type="hidden" name="application_id" value="<?= $application['id'] ?>">
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="text-red-600 hover:text-red-800" title="Reject" onclick="return confirm('Reject this application?')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">John Smith</p>
-                                <p class="text-sm text-gray-500">Senior Developer • Applied 2 hours ago</p>
-                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-3"></i>
+                            <p>No applications yet</p>
+                            <p class="text-sm">Applications will appear here when candidates apply to your jobs</p>
                         </div>
-                        <div class="flex space-x-2">
-                            <button class="text-green-600 hover:text-green-800">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-green-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Sarah Johnson</p>
-                                <p class="text-sm text-gray-500">Frontend Developer • Applied 5 hours ago</p>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button class="text-green-600 hover:text-green-800">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-center">
-                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center mr-3">
-                                <i class="fas fa-user text-yellow-600"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Mike Davis</p>
-                                <p class="text-sm text-gray-500">Full Stack Developer • Applied 1 day ago</p>
-                            </div>
-                        </div>
-                        <div class="flex space-x-2">
-                            <button class="text-green-600 hover:text-green-800">
-                                <i class="fas fa-check"></i>
-                            </button>
-                            <button class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="mt-4">
@@ -177,71 +155,37 @@
             <div class="px-4 py-5 sm:p-6">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Active Job Postings</h3>
                 <div class="space-y-3">
-                    <div class="p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">Senior PHP Developer</h4>
-                                <p class="text-sm text-gray-500">Posted 3 days ago • 24 applicants</p>
-                                <div class="flex items-center mt-2 space-x-4">
-                                    <span class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i> New York</span>
-                                    <span class="text-xs text-gray-400"><i class="fas fa-dollar-sign mr-1"></i> $80k-$120k</span>
-                                    <span class="text-xs text-gray-400"><i class="fas fa-clock mr-1"></i> Full-time</span>
+                    <?php if (!empty($recent_jobs)): ?>
+                        <?php foreach ($recent_jobs as $job): ?>
+                            <div class="p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="text-sm font-medium text-gray-900"><?= htmlspecialchars($job['title']) ?></h4>
+                                        <p class="text-sm text-gray-500">Posted <?= date('M j, Y', strtotime($job['created_at'])) ?> • <?= $job['applicant_count'] ?> applicants</p>
+                                        <div class="flex items-center mt-2 space-x-4">
+                                            <span class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i> <?= htmlspecialchars($job['location'] ?? 'Not specified') ?></span>
+                                            <span class="text-xs text-gray-400"><i class="fas fa-dollar-sign mr-1"></i> <?= $job['salary'] > 0 ? '$' . number_format($job['salary']) : 'Not specified' ?></span>
+                                            <span class="text-xs text-gray-400"><i class="fas fa-clock mr-1"></i> <?= htmlspecialchars($job['type'] ?? 'Full-time') ?></span>
+                                        </div>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <a href="/Talent-HUB/recruiter/jobs/edit?id=<?= $job['id'] ?>" class="text-blue-600 hover:text-blue-800 text-sm" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="/Talent-HUB/recruiter/jobs/delete?id=<?= $job['id'] ?>" class="text-red-600 hover:text-red-800 text-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this job posting?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-800 text-sm">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="text-center py-8 text-gray-500">
+                            <i class="fas fa-briefcase text-4xl mb-3"></i>
+                            <p>No job postings yet</p>
+                            <p class="text-sm">Create your first job posting to start attracting candidates</p>
                         </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">Frontend Developer</h4>
-                                <p class="text-sm text-gray-500">Posted 1 week ago • 18 applicants</p>
-                                <div class="flex items-center mt-2 space-x-4">
-                                    <span class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i> Remote</span>
-                                    <span class="text-xs text-gray-400"><i class="fas fa-dollar-sign mr-1"></i> $70k-$100k</span>
-                                    <span class="text-xs text-gray-400"><i class="fas fa-clock mr-1"></i> Full-time</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-800 text-sm">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="p-3 bg-gray-50 rounded-lg">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h4 class="text-sm font-medium text-gray-900">DevOps Engineer</h4>
-                                <p class="text-sm text-gray-500">Posted 2 weeks ago • 31 applicants</p>
-                                <div class="flex items-center mt-2 space-x-4">
-                                    <span class="text-xs text-gray-400"><i class="fas fa-map-marker-alt mr-1"></i> San Francisco</span>
-                                    <span class="text-xs text-gray-400"><i class="fas fa-dollar-sign mr-1"></i> $90k-$130k</span>
-                                    <span class="text-xs text-gray-400"><i class="fas fa-clock mr-1"></i> Full-time</span>
-                                </div>
-                            </div>
-                            <div class="flex space-x-2">
-                                <button class="text-blue-600 hover:text-blue-800 text-sm">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="text-red-600 hover:text-red-800 text-sm">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="mt-4">
