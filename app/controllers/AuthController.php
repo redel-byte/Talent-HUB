@@ -5,12 +5,14 @@ namespace App\Controllers;
 use App\Core\Controller;
 use App\Core\Database;
 use App\Repository\UserRepository;
+use App\Repository\CompanyRepository;
 use App\Core\CSRFProtection;
 use App\Core\Security;
 
 class AuthController extends Controller
 {
     private UserRepository $userRepository;
+    private CompanyRepository $companyRepository;
 
     public function __construct()
     {
@@ -19,6 +21,7 @@ class AuthController extends Controller
         }
 
         $this->userRepository = new UserRepository(Database::connection());
+        $this->companyRepository = new CompanyRepository(Database::connection());
         Security::setSecureHeaders();
     }
 
@@ -152,7 +155,11 @@ class AuthController extends Controller
         $password  = $_POST['password'] ?? '';
         $confirm   = $_POST['confirm_password'] ?? '';
         $role      = $_POST['role'] ?? 'candidate';
-        $email= $post['email'] ?? '';
+        
+        // Company data for recruiters
+        $companyName = Security::sanitize($_POST['company_name'] ?? '');
+        $companyEmail = Security::sanitize($_POST['company_email'] ?? '');
+        $companyAddress = Security::sanitize($_POST['company_address'] ?? '');
         
 
         if (!Security::isValidEmail($email)) {
@@ -171,20 +178,47 @@ class AuthController extends Controller
             $this->fail('Invalid role.', '/register', $email);
         }
 
+        // Validate company fields for recruiters
+        if ($role === 'recruiter') {
+            if (empty($companyName)) {
+                $this->fail('Company name is required for recruiters.', '/register', $email);
+            }
+            if (!Security::isValidEmail($companyEmail)) {
+                $this->fail('Invalid company email.', '/register', $email);
+            }
+        }
+
         if ($this->userRepository->findByEmail($email)) {
             $this->fail('Email already exists.', '/register', $email);
         }
 
-        $created = $this->userRepository->create(
-            $email,
-            $password,
-            $role,
-            $firstName,
-            $lastName
-        );
+        $created = $this->userRepository->create([
+            'fullname' => $firstName . ' ' . $lastName,
+            'email' => $email,
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'phone' => '', // Assuming phone is optional
+            'role' => $role
+        ]);
 
         if (!$created) {
             $this->fail('Registration failed.', '/register', $email);
+        }
+
+        // Create company for recruiters
+        if ($role === 'recruiter') {
+            $user = $this->userRepository->findByEmail($email);
+            if ($user) {
+                $companyCreated = $this->companyRepository->create([
+                    'name' => $companyName,
+                    'address' => $companyAddress,
+                    'email' => $companyEmail,
+                    'user_id' => $user['id']
+                ]);
+                if (!$companyCreated) {
+                    // Log error but don't fail registration
+                    error_log('Failed to create company for user: ' . $email);
+                }
+            }
         }
 
         Security::logSecurityEvent('User registered', [

@@ -3,7 +3,7 @@
 namespace App\Controllers;
 
 use App\Core\Database;
-use App\Models\User;
+use App\Repository\UserRepository;
 use App\Core\Validator;
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -25,7 +25,7 @@ if (empty($email) || empty($password) || !Validator::validateEmail($email)) {
   exit();
 }
 
-$userModel = new User(Database::connection());
+$userModel = new UserRepository(Database::connection());
 $user = $userModel->findByEmail($email);
 
 if ($user && password_verify($password, $user['password'])) {

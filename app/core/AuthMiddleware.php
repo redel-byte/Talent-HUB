@@ -34,9 +34,14 @@ class AuthMiddleware
             '/recruiter' => ['GET'],
             '/recruiter/dashboard' => ['GET'],
             '/recruiter/jobs' => ['GET'],
+            '/recruiter/jobs/create' => ['GET', 'POST'],
+            '/recruiter/jobs/edit' => ['GET', 'POST'],
+            '/recruiter/jobs/delete' => ['GET'],
             '/recruiter/candidates' => ['GET'],
             '/recruiter/company' => ['GET'],
-            '/recruiter/settings' => ['GET']
+            '/recruiter/company/create' => ['GET', 'POST'],
+            '/recruiter/settings' => ['GET'],
+            '/recruiter/applications' => ['GET']
         ],
         'admin' => [
             '/admin' => ['GET'],

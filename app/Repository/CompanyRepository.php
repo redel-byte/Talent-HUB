@@ -12,10 +12,10 @@ class CompanyRepository
 
     public function create(int $userId, array $data): bool{
         $stmt = $this->pdo->prepare(
-            "INSERT INTO company (id, name, address, email, created_at)
-             VALUES (:id, :name, :address, :email, NOW())"
+            "INSERT INTO company (user_id, name, address, email, created_at)
+             VALUES (:user_id, :name, :address, :email, NOW())"
         );
-        $data['id'] = $userId;
+        $data['user_id'] = $userId;
         return $stmt->execute($data);
     }
 

@@ -58,6 +58,9 @@ $router->addRouter('GET', '/recruiter/company/create', [RecruiterController::cla
 $router->addRouter('POST', '/recruiter/company/create', [RecruiterController::class, 'createCompany']);
 $router->addRouter('GET', '/recruiter/jobs/create', [RecruiterController::class, 'createJobForm']);
 $router->addRouter('POST', '/recruiter/jobs/create', [RecruiterController::class, 'createJob']);
+$router->addRouter('GET', '/recruiter/jobs/edit', [RecruiterController::class, 'editJobForm']);
+$router->addRouter('POST', '/recruiter/jobs/edit', [RecruiterController::class, 'editJob']);
+$router->addRouter('GET', '/recruiter/jobs/delete', [RecruiterController::class, 'deleteJob']);
 $router->addRouter('GET', '/recruiter/applications', [RecruiterController::class, 'applications']);
 
 // Admin Routes

@@ -11,6 +11,13 @@ class CategorieRepository
         $this->pdo = $pdo;
     }
 
+    public function findAll(): array
+    {
+        return $this->pdo
+            ->query("SELECT * FROM categories")
+            ->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getCategories(): array
     {
         return $this->pdo

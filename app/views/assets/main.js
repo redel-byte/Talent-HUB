@@ -98,6 +98,29 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log('Back to login listener attached');
     }
 
+    // Role selection and company fields
+    const jobSeekerRadio = document.getElementById('jobSeeker');
+    const employerRadio = document.getElementById('employer');
+    const companyFields = document.getElementById('companyFields');
+
+    function toggleCompanyFields() {
+        if (employerRadio && employerRadio.checked) {
+            companyFields.classList.remove('hidden');
+        } else {
+            companyFields.classList.add('hidden');
+        }
+    }
+
+    if (jobSeekerRadio) {
+        jobSeekerRadio.addEventListener('change', toggleCompanyFields);
+    }
+    if (employerRadio) {
+        employerRadio.addEventListener('change', toggleCompanyFields);
+    }
+
+    // Initial check
+    toggleCompanyFields();
+
     // Password visibility toggle
     const toggleLoginPassword = document.getElementById('toggleLoginPassword');
     const loginPassword = document.getElementById('loginPassword');

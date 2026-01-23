@@ -8,6 +8,7 @@ use App\Repository\CompanyRepository;
 use App\Repository\JobOfferRepository;
 use App\Repository\CategorieRepository ;
 use App\Repository\ApplicationRepository;
+use App\Repository\TagRepository;
 
 class RecruiterController extends Controller
 {
@@ -15,6 +16,7 @@ class RecruiterController extends Controller
     private JobOfferRepository $jobRepository;
     private CategorieRepository $categoryRepository;
     private ApplicationRepository $applicationRepository;
+    private TagRepository $tagRepository;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class RecruiterController extends Controller
         $this->jobRepository = new JobOfferRepository(Database::connection());
         $this->categoryRepository = new CategorieRepository(Database::connection());
         $this->applicationRepository = new ApplicationRepository(Database::connection());
+        $this->tagRepository = new TagRepository(Database::connection());
     }
 
     public function dashboard()
@@ -48,14 +51,35 @@ class RecruiterController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
-        $jobs = $this->jobRepository->findByCompany($user['id']);
+        // Temporary: ensure role is set for recruiter
+        if (empty($_SESSION['role'])) {
+            $_SESSION['role'] = 'recruiter';
+        }
+
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            // Create company if not exists
+            $this->companyRepository->create($user['id'], [
+                'name' => $user['fullname'] . ' Company',
+                'address' => '',
+                'email' => $user['email']
+            ]);
+            $company = $this->companyRepository->findByUser($user['id']);
+            if (!$company) {
+                $_SESSION['error'] = 'Failed to create company.';
+                $this->redirect('/Talent-HUB/recruiter/dashboard');
+            }
+        }
+
+        $jobs = $this->jobRepository->findByCompany($company['id']);
 
         $this->view('recruiter/jobs', [
             'user' => $user,
             'jobs' => $jobs,
             'page_title' => 'Manage Job Postings - TalentHub'
         ]);
-    }
+    }     
 
     public function candidates()
     {
@@ -157,17 +181,18 @@ class RecruiterController extends Controller
             $this->redirect('/Talent-HUB/login');
         }
 
-        $company = $this->companyRepository->findByUser($user['id']);
-        if (!$company) {
-            $_SESSION['error'] = 'Please create a company first.';
-            $this->redirect('/Talent-HUB/recruiter/company/create');
+        // Temporary: ensure role is set for recruiter
+        if (empty($_SESSION['role'])) {
+            $_SESSION['role'] = 'recruiter';
         }
 
         $categories = $this->categoryRepository->getCategories();
+        $tags = $this->tagRepository->getAll();
 
         $this->view('recruiter/create_job', [
             'user' => $user,
             'categories' => $categories,
+            'tags' => $tags,
             'page_title' => 'Create Job Posting - TalentHub'
         ]);
     }
@@ -187,27 +212,194 @@ class RecruiterController extends Controller
         $description = trim($_POST['description'] ?? '');
         $salary = (float)($_POST['salary'] ?? 0);
         $category_id = (int)($_POST['category_id'] ?? 0);
+        $tags = $_POST['tags'] ?? []; // Assume array of tag IDs
 
         if (empty($title) || empty($description) || !$category_id) {
             $_SESSION['error'] = 'All fields are required.';
             $this->redirect('/Talent-HUB/recruiter/jobs/create');
         }
 
-        $created = $this->jobRepository->create([
+        // Ensure company exists
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            $this->companyRepository->create($user['id'], [
+                'name' => $user['fullname'] . ' Company',
+                'address' => '',
+                'email' => $user['email']
+            ]);
+            $company = $this->companyRepository->findByUser($user['id']);
+        }
+
+        $jobId = $this->jobRepository->create([
             'title' => $title,
             'description' => $description,
             'salary' => $salary,
-            'company' => $user['id'],
+            'company' => $company['id'], // Use company id, not user id
             'category' => $category_id
         ]);
 
-        if ($created) {
+        if ($jobId) {
+            // Add tags
+            $this->jobRepository->associateTags($jobId, array_map('intval', $tags));
             $_SESSION['success'] = 'Job created successfully.';
             $this->redirect('/Talent-HUB/recruiter/jobs');
         } else {
             $_SESSION['error'] = 'Failed to create job.';
             $this->redirect('/Talent-HUB/recruiter/jobs/create');
         }
+    }
+
+    public function editJobForm()
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/Talent-HUB/login');
+        }
+
+        $jobId = (int)($_GET['id'] ?? 0);
+        if (!$jobId) {
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            // Create company if not exists
+            $this->companyRepository->create($user['id'], [
+                'name' => $user['fullname'] . ' Company',
+                'address' => '',
+                'email' => $user['email']
+            ]);
+            $company = $this->companyRepository->findByUser($user['id']);
+            if (!$company) {
+                $_SESSION['error'] = 'Failed to create company.';
+                $this->redirect('/Talent-HUB/recruiter/dashboard');
+            }
+        }
+
+        // Get job and check ownership
+        $job = $this->jobRepository->findById($jobId);
+        if (!$job || $job[0]['company_id'] != $company['id']) {
+            $_SESSION['error'] = 'Job not found.';
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        $job = $job[0];
+        $categories = $this->categoryRepository->findAll();
+        $tags = $this->tagRepository->findAll();
+        $jobTags = $this->jobRepository->getTags($jobId);
+
+        $this->view('recruiter/edit_job', [
+            'user' => $user,
+            'job' => $job,
+            'categories' => $categories,
+            'tags' => $tags,
+            'jobTags' => array_column($jobTags, 'id'),
+            'page_title' => 'Edit Job Posting - TalentHub'
+        ]);
+    }
+
+    public function editJob()
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/Talent-HUB/login');
+        }
+
+        $jobId = (int)($_POST['job_id'] ?? 0);
+        if (!$jobId) {
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            $_SESSION['error'] = 'Company not found.';
+            $this->redirect('/Talent-HUB/recruiter/dashboard');
+        }
+
+        // Get job and check ownership
+        $job = $this->jobRepository->findById($jobId);
+        if (!$job || $job[0]['company_id'] != $company['id']) {
+            $_SESSION['error'] = 'Job not found.';
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        $title = trim($_POST['title'] ?? '');
+        $description = trim($_POST['description'] ?? '');
+        $salary = (float)($_POST['salary'] ?? 0);
+        $category_id = (int)($_POST['category_id'] ?? 0);
+        $tags = $_POST['tags'] ?? [];
+
+        if (empty($title) || empty($description) || !$category_id) {
+            $_SESSION['error'] = 'All fields are required.';
+            $this->redirect('/Talent-HUB/recruiter/jobs/edit?id=' . $jobId);
+        }
+
+        $updated = $this->jobRepository->update($jobId, [
+            'title' => $title,
+            'description' => $description,
+            'salary' => $salary,
+            'category' => $category_id
+        ]);
+
+        if ($updated) {
+            // Update tags
+            $this->jobRepository->associateTags($jobId, array_map('intval', $tags));
+            $_SESSION['success'] = 'Job updated successfully.';
+        } else {
+            $_SESSION['error'] = 'Failed to update job.';
+        }
+
+        $this->redirect('/Talent-HUB/recruiter/jobs');
+    }
+
+    public function deleteJob()
+    {
+        $user = $this->getCurrentUser();
+        if (!$user) {
+            $this->redirect('/Talent-HUB/login');
+        }
+
+        $jobId = (int)($_GET['id'] ?? 0);
+        if (!$jobId) {
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            // Create company if not exists
+            $this->companyRepository->create($user['id'], [
+                'name' => $user['fullname'] . ' Company',
+                'address' => '',
+                'email' => $user['email']
+            ]);
+            $company = $this->companyRepository->findByUser($user['id']);
+            if (!$company) {
+                $_SESSION['error'] = 'Failed to create company.';
+                $this->redirect('/Talent-HUB/recruiter/dashboard');
+            }
+        }
+
+        // Get job and check ownership
+        $job = $this->jobRepository->findById($jobId);
+        if (!$job || $job[0]['company_id'] != $company['id']) {
+            $_SESSION['error'] = 'Job not found.';
+            $this->redirect('/Talent-HUB/recruiter/jobs');
+        }
+
+        if ($this->jobRepository->softDelete($jobId)) {
+            $_SESSION['success'] = 'Job deleted successfully.';
+        } else {
+            $_SESSION['error'] = 'Failed to delete job.';
+        }
+
+        $this->redirect('/Talent-HUB/recruiter/jobs');
     }
 
     public function applications()
@@ -222,12 +414,29 @@ class RecruiterController extends Controller
             $this->redirect('/Talent-HUB/recruiter/jobs');
         }
 
+        // Get user's company
+        $company = $this->companyRepository->findByUser($user['id']);
+        if (!$company) {
+            // Create company if not exists
+            $this->companyRepository->create($user['id'], [
+                'name' => $user['fullname'] . ' Company',
+                'address' => '',
+                'email' => $user['email']
+            ]);
+            $company = $this->companyRepository->findByUser($user['id']);
+            if (!$company) {
+                $_SESSION['error'] = 'Failed to create company.';
+                $this->redirect('/Talent-HUB/recruiter/dashboard');
+            }
+        }
+
         // Check if job belongs to user
         $job = $this->jobRepository->findById($jobId);
-        if (!$job || $job['company_id'] != $user['id']) {
+        if (!$job || $job[0]['company_id'] != $company['id']) {
             $this->redirect('/Talent-HUB/recruiter/jobs');
         }
 
+        $job = $job[0];
         $applications = $this->applicationRepository->findByJobOffer($jobId);
 
         $this->view('recruiter/applications', [

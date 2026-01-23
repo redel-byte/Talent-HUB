@@ -349,6 +349,44 @@
                                         </div>
                                     </div>
                                     
+                                    <!-- Company Fields for Recruiters -->
+                                    <div id="companyFields" class="hidden space-y-6">
+                                        <div class="border-t pt-6">
+                                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Company Information</h3>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label for="companyName" class="block text-gray-700 font-medium mb-2">Company Name</label>
+                                                    <div class="relative">
+                                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-building text-gray-400"></i>
+                                                        </div>
+                                                        <input name="company_name" type="text" id="companyName" class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition" placeholder="Your Company Ltd">
+                                                    </div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <label for="companyEmail" class="block text-gray-700 font-medium mb-2">Company Email</label>
+                                                    <div class="relative">
+                                                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                            <i class="fas fa-envelope text-gray-400"></i>
+                                                        </div>
+                                                        <input name="company_email" type="email" id="companyEmail" class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition" placeholder="contact@company.com">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="mt-6">
+                                                <label for="companyAddress" class="block text-gray-700 font-medium mb-2">Company Address</label>
+                                                <div class="relative">
+                                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                        <i class="fas fa-map-marker-alt text-gray-400"></i>
+                                                    </div>
+                                                    <input name="company_address" type="text" id="companyAddress" class="form-input w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition" placeholder="123 Business St, City, Country">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                     <div>
                                         <label for="signupPassword" class="block text-gray-700 font-medium mb-2">Password</label>
                                         <div class="relative">

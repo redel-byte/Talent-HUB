@@ -17,5 +17,5 @@ abstract class User
   public string $email;
   public string $password;
   public string $phone_number;
-  public int $role_id;
+  public string $role;
 }
